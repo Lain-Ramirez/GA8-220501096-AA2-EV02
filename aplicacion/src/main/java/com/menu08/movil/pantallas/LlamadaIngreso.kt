@@ -2,6 +2,7 @@ package com.menu08.movil.pantallas
 
 import com.menu08.movil.red.ClienteMenu08
 import com.menu08.movil.red.Resultado
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -49,7 +50,7 @@ object LlamadaIngreso {
 
         pendiente = null
         trabajo = alcance.launch {
-            entregar(ClienteMenu08.ingresar(correo, contrasena))
+            entregar(intentar(correo, contrasena))
         }
     }
 
@@ -77,6 +78,26 @@ object LlamadaIngreso {
         trabajo = null
         pendiente = null
         oyente = null
+    }
+
+    /**
+     * La red de seguridad del criterio de que nada llegue al usuario como un cierre inesperado.
+     *
+     * ClienteMenu08 ya convierte en ErrorRed todo lo que hereda de IOException, que es por donde
+     * salen la falta de red, el tiempo de espera agotado y el certificado rechazado. Lo que no
+     * cubre es una excepcion de otra familia: sin este envoltorio subiria hasta el launch de
+     * arriba, donde ya no hay nadie que la recoja, y el sistema cerraria la aplicacion.
+     *
+     * CancellationException se vuelve a lanzar a proposito: no es un fallo, es como Kotlin cuenta
+     * que se abandono la peticion en olvidar(), y tragarsela dejaria la pantalla esperando un
+     * resultado que nunca va a llegar.
+     */
+    private suspend fun intentar(correo: String, contrasena: String): Resultado = try {
+        ClienteMenu08.ingresar(correo, contrasena)
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        Resultado.ErrorRed(e)
     }
 
     private fun entregar(resultado: Resultado) {
