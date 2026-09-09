@@ -39,6 +39,18 @@ class ActividadIngreso : AppCompatActivity() {
         private const val CLAVE_MENSAJE = "mensaje"
 
         /**
+         * El unico archivo que esta aplicacion escribe en el dispositivo, y la unica clave que
+         * guarda: el correo del ultimo ingreso correcto, para no teclearlo cada vez.
+         *
+         * La contrasena NO se guarda aqui ni en ningun otro sitio. Tampoco el token ni el rol:
+         * viven en SesionMovil, en memoria, y se pierden al cerrar la aplicacion, que es
+         * exactamente lo que se quiere. Se comprueba sobre el APK de depuracion con
+         * `adb shell run-as com.menu08.movil ls shared_prefs`.
+         */
+        private const val PREFERENCIAS = "menu08_movil"
+        private const val CLAVE_CORREO_RECORDADO = "correo_recordado"
+
+        /**
          * La vuelta al ingreso desde una pantalla ya autenticada. La usa quien descubra que la
          * sesion no sirve —el token vive 120 minutos y el servidor responde 401 no_autenticado
          * cuando caduca—, para que el usuario vea el motivo en vez de un formulario en blanco.
@@ -98,7 +110,17 @@ class ActividadIngreso : AppCompatActivity() {
         if (estadoGuardado == null) {
             // Primera creacion. Si se llega por sesion caducada, el correo viene hecho y el
             // motivo se explica; la contrasena se queda vacia, que es lo unico que se teclea.
-            intent.getStringExtra(EXTRA_CORREO)?.let { entradaCorreo.setText(it) }
+            //
+            // Y si se llega en frio, desde el lanzador, se recupera el correo del ultimo ingreso
+            // correcto. El extra manda sobre lo guardado: viene de una sesion que acaba de
+            // caducar, asi que es mas reciente.
+            val correoInicial = intent.getStringExtra(EXTRA_CORREO) ?: correoRecordado()
+
+            correoInicial?.let {
+                entradaCorreo.setText(it)
+                entradaContrasena.requestFocus()
+            }
+
             pintarMensaje(intent.getStringExtra(EXTRA_MOTIVO))
         } else {
             // Vuelta de un giro. El correo lo restaura el propio campo; el mensaje no, porque un
@@ -212,7 +234,31 @@ class ActividadIngreso : AppCompatActivity() {
         FalloIngreso.CONTRASENA_VACIA -> R.string.ingreso_falta_contrasena
     }
 
+    /**
+     * El correo del ultimo ingreso correcto, o nulo si nunca hubo uno.
+     */
+    private fun correoRecordado(): String? =
+        getSharedPreferences(PREFERENCIAS, Context.MODE_PRIVATE)
+            .getString(CLAVE_CORREO_RECORDADO, null)
+            ?.takeIf { it.isNotBlank() }
+
+    /**
+     * Se recuerda el correo solo cuando el ingreso ACERTO.
+     *
+     * Guardarlo al pulsar el boton dejaria memorizado un correo equivocado, que es justo el que
+     * no conviene volver a ofrecer. Se escribe una clave y ninguna mas: la contrasena que se
+     * acaba de teclear no se toca.
+     */
+    private fun recordarCorreo(correo: String) {
+        getSharedPreferences(PREFERENCIAS, Context.MODE_PRIVATE)
+            .edit()
+            .putString(CLAVE_CORREO_RECORDADO, correo)
+            .apply()
+    }
+
     private fun irAUbicacion() {
+        SesionMovil.correo?.let { recordarCorreo(it) }
+
         startActivity(ActividadUbicacion.intencion(this, SesionMovil.nombre, SesionMovil.rol))
 
         // Con finish() el boton atras ya no devuelve al formulario de una sesion abierta.

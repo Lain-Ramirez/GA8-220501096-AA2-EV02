@@ -1,5 +1,7 @@
 package com.menu08.movil.red
 
+import android.util.Log
+import com.menu08.movil.BuildConfig
 import java.io.IOException
 import java.net.URL
 import java.net.URLEncoder
@@ -8,6 +10,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 private const val CODIFICACION = "UTF-8"
+
+/** Etiqueta unica de la capa de red, para poder filtrarla en el registro del dispositivo. */
+private const val ETIQUETA = "Menu08Red"
 
 /**
  * Compone el cuerpo de un POST de formulario: pares nombre=valor unidos con &, cada parte
@@ -112,6 +117,8 @@ object ClienteMenu08 {
                 val flujo = if (codigo in 200..299) conexion.inputStream else conexion.errorStream
                 val texto = flujo?.bufferedReader(Charsets.UTF_8)?.use { it.readText() }.orEmpty()
 
+                registrar(ruta, codigo)
+
                 val resultado = traducirRespuesta(codigo, texto)
                 cerrarSesionSiElServidorLaRechaza(resultado)
                 resultado
@@ -121,6 +128,29 @@ object ClienteMenu08 {
                 conexion?.disconnect()
             }
         }
+
+    /**
+     * La unica traza de la capa de red: la ruta y el codigo, y solo en depuracion.
+     *
+     * Lo que NO sale de aqui es la lista completa: el cuerpo enviado —que en el ingreso lleva la
+     * contrasena—, el cuerpo recibido —que en el ingreso lleva el token—, la cookie de sesion y
+     * las coordenadas. Con la ruta y el codigo se sigue el recorrido de una prueba en dispositivo
+     * sin que el registro guarde nada que no deba: el registro de Android lo puede leer cualquier
+     * aplicacion con permiso de depuracion, y en un telefono prestado eso no es hipotetico.
+     *
+     * La guarda de BuildConfig.DEBUG deja el APK de entrega mudo. R8 ademas la resuelve como
+     * constante falsa y elimina la llamada entera del bytecode de la variante release.
+     *
+     * Nivel INFO y no DEBUG: el dispositivo de pruebas del proyecto —un TECNO BG7— filtra el
+     * nivel DEBUG en su registro, asi que una traza escrita con Log.d no se ve por mucho que se
+     * busque. Como la guarda ya la deja fuera de la variante release, el nivel no cambia nada
+     * de lo que se entrega; solo decide si se ve mientras se prueba, que es para lo que existe.
+     */
+    private fun registrar(ruta: String, codigo: Int) {
+        if (BuildConfig.DEBUG) {
+            Log.i(ETIQUETA, "POST $ruta -> $codigo")
+        }
+    }
 
     /**
      * El token vive 120 minutos. Cuando caduca, o cuando se llama sin sesion, el servidor

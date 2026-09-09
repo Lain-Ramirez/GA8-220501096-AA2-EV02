@@ -19,9 +19,11 @@
         android:fullBackupContent="@xml/reglas_copia_seguridad"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/nombre_aplicacion"
+        android:networkSecurityConfig="@xml/seguridad_red"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Tema.Menu08Movil">
+        android:theme="@style/Tema.Menu08Movil"
+        android:usesCleartextTraffic="false">
         <!--
             La aplicacion arranca pidiendo credenciales: no guarda ninguna, asi que no hay
             arranque posible que se salte esta pantalla.
