@@ -20,6 +20,70 @@
     <string name="ingreso_error_servidor">El servidor respondió con un error (%1$d). Vuelve a intentarlo en un momento.</string>
     <string name="ingreso_error_red">No se pudo conectar con adso.menu08.com. Revisa la conexión e inténtalo de nuevo.</string>
 
-    <!-- Pantalla de ubicación: se construye en el issue #7 -->
-    <string name="ubicacion_en_construccion">Pantalla de ubicación. Se construye en el issue #7.</string>
+    <!-- Pantalla de ubicación -->
+    <string name="ubicacion_titulo">Punto del truck</string>
+    <string name="ubicacion_saludo">Sesión abierta como %1$s</string>
+
+    <!--
+        La frase del permiso. Está a la vista desde que abre la pantalla, antes de que se pida
+        nada, y es la misma que se vuelve a mostrar cuando el sistema pide justificar la petición.
+    -->
+    <string name="ubicacion_explicacion_permiso">La ubicación se usa para fijar el punto de la parada del food truck, y sólo cuando pulsas el botón.</string>
+
+    <!-- La ficha de la parada -->
+    <string name="ubicacion_sin_ficha">Todavía no hay ninguna parada a la vista: reporta el punto para ver cuál tiene el sistema.</string>
+    <string name="ubicacion_parada_actualizada">Se corrigió el punto de la parada que ya estaba vigente. El nombre, la referencia y el horario los puso el dueño y no se tocan.</string>
+    <string name="ubicacion_parada_creada">No había ninguna parada vigente: se registró una parada nueva con este punto.</string>
+    <string name="ubicacion_etiqueta_referencia">Referencia</string>
+    <string name="ubicacion_etiqueta_dia">Día</string>
+    <string name="ubicacion_etiqueta_horario">Horario</string>
+    <string name="ubicacion_etiqueta_latitud">Latitud</string>
+    <string name="ubicacion_etiqueta_longitud">Longitud</string>
+    <string name="ubicacion_horario">%1$s a %2$s</string>
+
+    <!--
+        Las tres columnas que admiten nulo en la tabla `ubicaciones`. Un nulo se lee con estas
+        frases y nunca como 0.0, que en el mar de Guinea es un punto de verdad.
+    -->
+    <string name="ubicacion_sin_referencia">Sin referencia</string>
+    <string name="ubicacion_sin_punto">Sin punto registrado</string>
+
+    <!-- dia_semana fuera del rango de 1 a 7: el campo dice algo en vez de quedarse en blanco. -->
+    <string name="ubicacion_dia_desconocido">Día sin definir</string>
+
+    <!--
+        Los siete días, en el orden de Ubicacion::DIAS del servidor: 1 lunes … 7 domingo. Se leen
+        por el índice `dia_semana - 1`, así que el orden de estos elementos es el contrato.
+    -->
+    <string-array name="dias_semana">
+        <item>Lunes</item>
+        <item>Martes</item>
+        <item>Miércoles</item>
+        <item>Jueves</item>
+        <item>Viernes</item>
+        <item>Sábado</item>
+        <item>Domingo</item>
+    </string-array>
+
+    <!-- Los cuatro estados del botón -->
+    <string name="boton_ubicacion_disponible">Reportar mi punto</string>
+    <string name="boton_ubicacion_capturando">Capturando el punto…</string>
+    <string name="boton_ubicacion_de_nuevo">Reportar de nuevo</string>
+    <string name="ubicacion_progreso">Capturando el punto</string>
+    <string name="ubicacion_enviado">Punto enviado a las %1$s.</string>
+
+    <!-- Los cuatro avisos que detecta el issue #8. Todos ocultos de partida. -->
+    <string name="aviso_permiso_denegado">Sin el permiso de ubicación no hay punto que reportar. Pulsa el botón para concederlo.</string>
+    <string name="aviso_permiso_denegado_siempre">El permiso de ubicación quedó denegado para siempre, así que el sistema ya no lo va a preguntar: hay que concederlo a mano.</string>
+    <string name="aviso_permiso_denegado_siempre_accion">Abrir los ajustes de la aplicación</string>
+    <string name="aviso_proveedor_apagado">La ubicación del teléfono está apagada y no hay de dónde leer el punto.</string>
+    <string name="aviso_proveedor_apagado_accion">Abrir los ajustes de ubicación</string>
+    <string name="aviso_punto_aproximado">El permiso concedido es sólo de ubicación aproximada: el punto puede quedar a unas manzanas del truck.</string>
+
+    <!-- Un dispositivo sin la pantalla de ajustes a la que apunta la accion del aviso. -->
+    <string name="ubicacion_ajustes_no_disponibles">Este dispositivo no tiene esa pantalla de ajustes. Ábrelos a mano desde el teléfono.</string>
+
+    <!-- Motivos que pinta el issue #8 -->
+    <string name="ubicacion_error_sin_punto">No se obtuvo un punto reciente. Vuelve a intentarlo.</string>
+    <string name="ubicacion_sesion_caducada">La sesión caducó. Vuelve a ingresar.</string>
 </resources>

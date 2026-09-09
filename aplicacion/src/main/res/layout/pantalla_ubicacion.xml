@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Segunda pantalla del APK: que parada tiene el sistema y el boton que reporta el punto.
+
+    Aqui no hay nada del GPS ni de la red. Todo lo que se ve lo pinta ActividadUbicacion desde el
+    codigo, y quien decide cuando pintarlo es el issue #8. La ficha esta oculta de partida, y con
+    ella los cuatro avisos.
+-->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/pantalla_ubicacion"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:id="@+id/texto_titulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ubicacion_titulo"
+            android:textAppearance="?attr/textAppearanceHeadlineMedium"
+            android:textColor="?attr/colorPrimary" />
+
+        <TextView
+            android:id="@+id/texto_saludo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:textColor="?attr/colorOnSurfaceVariant" />
+
+        <!--
+            La frase del permiso, a la vista desde el arranque: se explica para que se usa la
+            ubicacion antes de que el sistema la pida por primera vez.
+        -->
+        <TextView
+            android:id="@+id/nota_permiso"
+            style="@style/Menu08.Aviso"
+            android:background="@drawable/fondo_nota"
+            android:layout_marginTop="20dp"
+            android:text="@string/ubicacion_explicacion_permiso"
+            android:textColor="?attr/colorOnSecondaryContainer" />
+
+        <!-- Lo que se ve mientras no se ha reportado ningun punto en esta sesion. -->
+        <TextView
+            android:id="@+id/texto_sin_ficha"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/ubicacion_sin_ficha"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant" />
+
+        <!--
+            La ficha de la parada. Sus campos son los del objeto `parada` del contrato del issue
+            #3, que son las columnas de la tabla `ubicaciones`, y ninguno mas.
+        -->
+        <LinearLayout
+            android:id="@+id/ficha_parada"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/fondo_ficha"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:visibility="gone">
+
+            <!-- Cual de los dos desenlaces fue: parada vigente corregida, o parada nueva. -->
+            <TextView
+                android:id="@+id/texto_desenlace"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:textColor="?attr/colorOnSurfaceVariant" />
+
+            <TextView
+                android:id="@+id/valor_nombre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textColor="?attr/colorOnSurface" />
+
+            <LinearLayout style="@style/Menu08.FilaFicha">
+
+                <TextView
+                    style="@style/Menu08.EtiquetaFicha"
+                    android:text="@string/ubicacion_etiqueta_referencia" />
+
+                <TextView
+                    android:id="@+id/valor_referencia"
+                    style="@style/Menu08.ValorFicha" />
+
+            </LinearLayout>
+
+            <LinearLayout style="@style/Menu08.FilaFicha">
+
+                <TextView
+                    style="@style/Menu08.EtiquetaFicha"
+                    android:text="@string/ubicacion_etiqueta_dia" />
+
+                <TextView
+                    android:id="@+id/valor_dia"
+                    style="@style/Menu08.ValorFicha" />
+
+            </LinearLayout>
+
+            <LinearLayout style="@style/Menu08.FilaFicha">
+
+                <TextView
+                    style="@style/Menu08.EtiquetaFicha"
+                    android:text="@string/ubicacion_etiqueta_horario" />
+
+                <TextView
+                    android:id="@+id/valor_horario"
+                    style="@style/Menu08.ValorFicha" />
+
+            </LinearLayout>
+
+            <LinearLayout style="@style/Menu08.FilaFicha">
+
+                <TextView
+                    style="@style/Menu08.EtiquetaFicha"
+                    android:text="@string/ubicacion_etiqueta_latitud" />
+
+                <TextView
+                    android:id="@+id/valor_latitud"
+                    style="@style/Menu08.ValorFicha" />
+
+            </LinearLayout>
+
+            <LinearLayout style="@style/Menu08.FilaFicha">
+
+                <TextView
+                    style="@style/Menu08.EtiquetaFicha"
+                    android:text="@string/ubicacion_etiqueta_longitud" />
+
+                <TextView
+                    android:id="@+id/valor_longitud"
+                    style="@style/Menu08.ValorFicha" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!--
+            Los cuatro avisos del issue #8, cada uno reservado y oculto de partida. Dos llevan su
+            accion: los ajustes de la aplicacion y los de ubicacion del telefono.
+        -->
+        <TextView
+            android:id="@+id/aviso_permiso_denegado"
+            style="@style/Menu08.Aviso"
+            android:background="@drawable/fondo_aviso"
+            android:text="@string/aviso_permiso_denegado"
+            android:textColor="?attr/colorOnErrorContainer"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/aviso_permiso_denegado_siempre"
+            style="@style/Menu08.Aviso"
+            android:background="@drawable/fondo_aviso"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/aviso_permiso_denegado_siempre"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="?attr/colorOnErrorContainer" />
+
+            <Button
+                android:id="@+id/boton_ajustes_aplicacion"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/aviso_permiso_denegado_siempre_accion" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/aviso_proveedor_apagado"
+            style="@style/Menu08.Aviso"
+            android:background="@drawable/fondo_aviso"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/aviso_proveedor_apagado"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="?attr/colorOnErrorContainer" />
+
+            <Button
+                android:id="@+id/boton_ajustes_ubicacion"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/aviso_proveedor_apagado_accion" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/aviso_punto_aproximado"
+            style="@style/Menu08.Aviso"
+            android:background="@drawable/fondo_nota"
+            android:text="@string/aviso_punto_aproximado"
+            android:textColor="?attr/colorOnSecondaryContainer"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/boton_ubicacion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/boton_ubicacion_disponible" />
+
+        <ProgressBar
+            android:id="@+id/progreso_ubicacion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:contentDescription="@string/ubicacion_progreso"
+            android:indeterminate="true"
+            android:visibility="gone" />
+
+        <!-- La hora del ultimo envio, o el motivo del fallo: es lo que separa correcto de error. -->
+        <TextView
+            android:id="@+id/texto_estado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+</ScrollView>
