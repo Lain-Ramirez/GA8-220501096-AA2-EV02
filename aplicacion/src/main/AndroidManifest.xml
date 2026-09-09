@@ -22,15 +22,29 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Tema.Menu08Movil">
+        <!--
+            La aplicacion arranca pidiendo credenciales: no guarda ninguna, asi que no hay
+            arranque posible que se salte esta pantalla.
+
+            adjustResize, y no el ajuste por omision: con el teclado abierto el formulario se
+            encoge dentro de su ScrollView en vez de que el sistema empuje la ventana hacia
+            arriba y deje el boton fuera.
+        -->
         <activity
-            android:name=".pantallas.ActividadPrincipal"
-            android:exported="true">
+            android:name=".pantallas.ActividadIngreso"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- exported="false": aqui solo se entra desde el ingreso, con la sesion ya abierta. -->
+        <activity
+            android:name=".pantallas.ActividadUbicacion"
+            android:exported="false" />
     </application>
 
 </manifest>

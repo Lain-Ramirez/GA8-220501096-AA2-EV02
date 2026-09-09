@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Paleta Brasa en oscuro: los tokens de html.o de ADSO.menu08.com/recursos/css/md3.css.
+
+    Los nombres son los mismos que en values/colors.xml y el tema no cambia: como
+    Tema.Menu08Movil hereda de Theme.Material3.DayNight, el sistema elige este archivo cuando el
+    telefono esta en modo oscuro y el otro cuando esta en claro.
+-->
+<resources>
+
+    <color name="md3_primary">#ffb59f</color>
+    <color name="md3_on_primary">#5f1300</color>
+    <color name="md3_primary_container">#8a1f00</color>
+    <color name="md3_on_primary_container">#ffdbcf</color>
+
+    <color name="md3_secondary">#e9c25b</color>
+    <color name="md3_on_secondary">#3f2e00</color>
+    <color name="md3_secondary_container">#5c4300</color>
+    <color name="md3_on_secondary_container">#f5df93</color>
+
+    <color name="md3_tertiary">#b0eaaf</color>
+    <color name="md3_on_tertiary">#274c28</color>
+    <color name="md3_tertiary_container">#2e532e</color>
+    <color name="md3_on_tertiary_container">#c7f2c6</color>
+
+    <color name="md3_error">#ffb4ab</color>
+    <color name="md3_on_error">#690005</color>
+    <color name="md3_error_container">#93000a</color>
+    <color name="md3_on_error_container">#ffdad6</color>
+
+    <color name="md3_surface">#180f0a</color>
+    <color name="md3_on_surface">#f0dfd7</color>
+    <color name="md3_surface_variant">#52443c</color>
+    <color name="md3_on_surface_variant">#d7c2b7</color>
+    <color name="md3_outline">#a08d84</color>
+
+</resources>
