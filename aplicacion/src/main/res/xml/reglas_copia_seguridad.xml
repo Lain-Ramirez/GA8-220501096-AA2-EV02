@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+   Reglas de copia de seguridad. Se dejan vacias: la aplicacion no guarda todavia nada que
+   merezca respaldarse, y las credenciales nunca deben salir del dispositivo (#9).
+   Este archivo lo ignoran los dispositivos anteriores a la API 31.
+   https://developer.android.com/guide/topics/data/autobackup
+-->
+<full-backup-content>
+</full-backup-content>
