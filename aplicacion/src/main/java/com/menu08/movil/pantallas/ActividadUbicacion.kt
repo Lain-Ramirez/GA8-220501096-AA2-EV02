@@ -1,5 +1,7 @@
 package com.menu08.movil.pantallas
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -17,18 +19,24 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.menu08.movil.R
+import com.menu08.movil.red.Resultado
 import com.menu08.movil.red.SesionMovil
+import com.menu08.movil.ubicacion.GestorUbicacion
+import com.menu08.movil.ubicacion.PuntoCapturado
 import java.util.Date
 
 /**
  * Pantalla de ubicacion: que parada tiene el sistema y el boton que reporta el punto.
  *
- * Aqui no hay GPS ni red. La pantalla sabe pintar cuatro estados del boton, los dos desenlaces
- * del servicio de reporte y cuatro avisos, y nada mas; quien decide cuando pintar cada cosa es el
- * issue #8, que llama a las funciones marcadas abajo como puntos de enganche.
+ * La pantalla sabe pintar cuatro estados del boton, los dos desenlaces del servicio de reporte y
+ * cuatro avisos. Debajo hay dos capas que no son suyas y a las que solo pide cosas: GestorUbicacion
+ * se ocupa del permiso, del proveedor y de leer el punto, y LlamadaUbicacion de mandarlo. Aqui no
+ * se abre ninguna conexion ni se toca el GPS: se encadenan los cuatro pasos y se pinta lo que
+ * devuelve cada uno.
  *
- * Mientras #8 no llegue, el boton avanza el recorrido de RecorridoUbicacion, que enseña esos
- * estados uno a uno en el dispositivo.
+ * Ni la captura ni el envio cuelgan de la actividad, porque entre las dos cabe medio minuto y en
+ * ese rato entra un giro de pantalla de sobra: las dos viven en sus objetos y esta pantalla se
+ * vuelve a apuntar a ellas en onStart().
  */
 class ActividadUbicacion : AppCompatActivity() {
 
@@ -46,10 +54,12 @@ class ActividadUbicacion : AppCompatActivity() {
 
         private const val CLAVE_AVISOS = "avisos_visibles"
         private const val CLAVE_CORREO = "correo_de_la_sesion"
-        private const val CLAVE_PASO = "paso_del_recorrido"
+        private const val CLAVE_PEDIDO = "ya_se_pidio_el_permiso"
+        private const val CLAVE_DENEGADO = "denegado_para_siempre"
+        private const val CLAVE_LATITUD = "punto_pendiente_latitud"
+        private const val CLAVE_LONGITUD = "punto_pendiente_longitud"
 
-        /** Lo que dura el indicador en el recorrido provisional. Lo borra el issue #8. */
-        private const val ESPERA_DEL_RECORRIDO = 1_500L
+        private const val CODIGO_PERMISO = 1
 
         fun intencion(origen: Context, nombre: String?, rol: String?): Intent =
             Intent(origen, ActividadUbicacion::class.java)
@@ -86,8 +96,26 @@ class ActividadUbicacion : AppCompatActivity() {
      */
     private var correoDeLaSesion: String? = null
 
-    /** Solo del recorrido provisional. Lo borra el issue #8 junto con RecorridoUbicacion. */
-    private var pasoDelRecorrido = 0
+    /**
+     * Si ya se pidio el permiso alguna vez desde esta pantalla.
+     *
+     * Hace falta para leer bien shouldShowRequestPermissionRationale(): ese metodo devuelve false
+     * en dos situaciones opuestas —antes de haber pedido nada, y cuando el usuario ya denego para
+     * siempre—, asi que sin esta marca las dos se confundirian y la primera pulsacion pareceria
+     * un rechazo definitivo.
+     */
+    private var yaSePidioElPermiso = false
+
+    /** El sistema ya no va a enseñar el dialogo: solo quedan los ajustes de la aplicacion. */
+    private var denegadoParaSiempre = false
+
+    /**
+     * El punto que se capturo y no se llego a asentar por un fallo de red.
+     *
+     * Se guarda para que reintentar sea mandarlo otra vez y no volver a leer el GPS: la lectura
+     * puede tardar veinte segundos y el punto de hace un momento sigue siendo donde esta el truck.
+     */
+    private var puntoPendiente: PuntoCapturado? = null
 
     override fun onCreate(estadoGuardado: Bundle?) {
         super.onCreate(estadoGuardado)
@@ -138,11 +166,11 @@ class ActividadUbicacion : AppCompatActivity() {
         } else {
             // Vuelta de un giro: el estado del boton, la ficha y los avisos se rehacen tal cual.
             correoDeLaSesion = estadoGuardado.getString(CLAVE_CORREO)
-            pasoDelRecorrido = estadoGuardado.getInt(CLAVE_PASO)
+            yaSePidioElPermiso = estadoGuardado.getBoolean(CLAVE_PEDIDO)
+            denegadoParaSiempre = estadoGuardado.getBoolean(CLAVE_DENEGADO)
+            puntoPendiente = puntoDe(estadoGuardado)
             pintar(EstadoUbicacion.leerDe(estadoGuardado))
             restaurarAvisos(estadoGuardado.getStringArray(CLAVE_AVISOS))
-
-            if (estado is EstadoUbicacion.Capturando) programarElRecorrido()
         }
     }
 
@@ -151,8 +179,54 @@ class ActividadUbicacion : AppCompatActivity() {
 
         estado.guardarEn(destino)
         destino.putString(CLAVE_CORREO, correoDeLaSesion)
-        destino.putInt(CLAVE_PASO, pasoDelRecorrido)
+        destino.putBoolean(CLAVE_PEDIDO, yaSePidioElPermiso)
+        destino.putBoolean(CLAVE_DENEGADO, denegadoParaSiempre)
+        destino.putString(CLAVE_LATITUD, puntoPendiente?.latitud)
+        destino.putString(CLAVE_LONGITUD, puntoPendiente?.longitud)
         destino.putStringArray(CLAVE_AVISOS, avisosVisibles.map { it.name }.toTypedArray())
+    }
+
+    /**
+     * Vuelve a apuntarse a la captura y al envio que siguieran vivos tras un giro.
+     *
+     * Los dos pueden entregar aqui mismo lo que llego mientras no habia pantalla, asi que el
+     * repaso de abajo va despues: para entonces el estado ya es el definitivo.
+     */
+    override fun onStart() {
+        super.onStart()
+
+        if (GestorUbicacion.capturando || LlamadaUbicacion.enCurso) pintarCapturando()
+
+        GestorUbicacion.escuchar(::alTerminarLaCaptura)
+        LlamadaUbicacion.escuchar(::alResponderElServidor)
+
+        // Si se restauro «capturando» pero no hay ni captura ni envio volando, el trabajo murio
+        // con el proceso: sin esto el boton se quedaria deshabilitado para siempre.
+        val volando = GestorUbicacion.capturando || LlamadaUbicacion.enCurso
+        if (estado is EstadoUbicacion.Capturando && !volando) pintarDisponible()
+    }
+
+    override fun onStop() {
+        // Sin esto los dos objetos retendrian una actividad ya destruida despues del giro.
+        GestorUbicacion.escuchar(null)
+        LlamadaUbicacion.escuchar(null)
+        super.onStop()
+    }
+
+    override fun onDestroy() {
+        // Girar no cuenta como irse: solo se abandonan cuando la pantalla se va de verdad.
+        if (isFinishing) {
+            GestorUbicacion.olvidar()
+            LlamadaUbicacion.olvidar()
+        }
+        super.onDestroy()
+    }
+
+    private fun puntoDe(origen: Bundle): PuntoCapturado? {
+        val latitud = origen.getString(CLAVE_LATITUD) ?: return null
+        val longitud = origen.getString(CLAVE_LONGITUD) ?: return null
+
+        return PuntoCapturado(latitud, longitud)
     }
 
     // ---------------------------------------------------------------------------------------
@@ -342,36 +416,190 @@ class ActividadUbicacion : AppCompatActivity() {
     }
 
     // ---------------------------------------------------------------------------------------
-    // Provisional: lo sustituye el issue #8 por la captura y el envio de verdad.
+    // El reporte del punto: permiso, proveedor, captura y envio.
+    //
+    // Este es todo el encadenamiento, y cada eslabon termina siempre en un estado de la pantalla:
+    // ninguna rama deja el boton deshabilitado ni cierra la aplicacion.
     // ---------------------------------------------------------------------------------------
 
-    private val avanzarElRecorrido = Runnable {
-        val paso = pasoDelRecorrido % RecorridoUbicacion.pasos.size
+    private fun alPulsarElBoton() {
+        ocultarAvisos()
 
-        RecorridoUbicacion.pasos[paso](this)
-        pasoDelRecorrido = (paso + 1) % RecorridoUbicacion.pasos.size
+        // Un fallo de red dejo el punto guardado: reintentar es volver a mandarlo, sin molestar
+        // otra vez al GPS ni al usuario con el permiso.
+        val guardado = puntoPendiente
+        if (guardado != null) {
+            enviar(guardado)
+            return
+        }
+
+        if (GestorUbicacion.hayPermiso(this)) {
+            reportarConElPermisoConcedido()
+        } else {
+            pedirElPermiso()
+        }
     }
 
     /**
-     * Cada pulsacion enseña el indicador y, pasado un momento, el siguiente estado del recorrido.
+     * Pide los dos permisos de ubicacion en una sola llamada.
      *
-     * El indicador tiene que irse solo: mientras esta puesto el boton queda deshabilitado, y el
-     * boton es lo unico que avanza el recorrido, asi que dejarlo fijo encallaria la pantalla.
+     * Van juntos porque desde Android 12 el sistema descarta la solicitud del permiso fino cuando
+     * viaja sola. Y si ya se denego para siempre no se llama al dialogo, que no apareceria: se
+     * ofrecen los ajustes de la aplicacion, que es el unico camino que le queda al usuario.
      */
-    private fun alPulsarElBoton() {
-        if (pasoDelRecorrido == 0) ocultarAvisos()
+    private fun pedirElPermiso() {
+        if (denegadoParaSiempre) {
+            mostrarAviso(AvisoUbicacion.PERMISO_DENEGADO_SIEMPRE)
+            pintarDisponible()
+            return
+        }
+
+        // El sistema pide justificar la peticion: se vuelve a poner delante la frase de para que
+        // se usa la ubicacion, que es la misma que esta a la vista desde que abre la pantalla.
+        if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
+            explicarPermiso()
+        }
+
+        yaSePidioElPermiso = true
+        requestPermissions(GestorUbicacion.PERMISOS, CODIGO_PERMISO)
+    }
+
+    override fun onRequestPermissionsResult(
+        codigo: Int,
+        permisos: Array<out String>,
+        concesiones: IntArray,
+    ) {
+        super.onRequestPermissionsResult(codigo, permisos, concesiones)
+
+        if (codigo != CODIGO_PERMISO) return
+
+        // Se relee del sistema en vez de contar concesiones: es la misma respuesta y no depende
+        // del orden en que llegue el array.
+        if (GestorUbicacion.hayPermiso(this)) {
+            reportarConElPermisoConcedido()
+            return
+        }
+
+        // Denegado y sin justificacion que enseñar significa que el sistema ya no va a preguntar.
+        // La marca es lo que separa este caso de la primera vez, donde ese metodo tambien
+        // devuelve false porque todavia no se habia pedido nada.
+        denegadoParaSiempre = yaSePidioElPermiso &&
+            !shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)
+
+        mostrarAviso(
+            if (denegadoParaSiempre) {
+                AvisoUbicacion.PERMISO_DENEGADO_SIEMPRE
+            } else {
+                AvisoUbicacion.PERMISO_DENEGADO
+            }
+        )
+
+        // Denegado: no se captura ni se envia nada, y la aplicacion sigue en pie.
+        pintarDisponible()
+    }
+
+    /**
+     * Con el permiso ya concedido: se comprueba el proveedor y se lee.
+     *
+     * Si solo se concedio el aproximado se reporta igual —un punto a unas manzanas sigue diciendo
+     * en que barrio para el truck— pero se avisa, y no se vuelve a abrir el dialogo del permiso
+     * fino en cada pulsacion: para hayPermiso() el aproximado ya es permiso.
+     */
+    @SuppressLint("MissingPermission")
+    private fun reportarConElPermisoConcedido() {
+        if (!GestorUbicacion.permisoFino(this)) mostrarAviso(AvisoUbicacion.PUNTO_APROXIMADO)
+
+        // Sin un proveedor encendido no hay de donde leer: no se llama a la captura.
+        if (GestorUbicacion.proveedoresEncendidos(this).isEmpty()) {
+            mostrarAviso(AvisoUbicacion.PROVEEDOR_APAGADO)
+            pintarDisponible()
+            return
+        }
 
         pintarCapturando()
-        programarElRecorrido()
+
+        // El permiso esta comprobado en la linea de arriba y en hayPermiso(), pero eso el
+        // analizador no lo sigue a traves del gestor: de ahi la anotacion de esta funcion.
+        GestorUbicacion.capturar(this)
     }
 
-    private fun programarElRecorrido() {
-        botonUbicacion.removeCallbacks(avanzarElRecorrido)
-        botonUbicacion.postDelayed(avanzarElRecorrido, ESPERA_DEL_RECORRIDO)
+    /** Nulo es falta de punto —sin fijacion en veinte segundos, o solo uno viejo—, no un fallo. */
+    private fun alTerminarLaCaptura(punto: PuntoCapturado?) {
+        if (punto == null) {
+            pintarErrorSinPunto()
+            return
+        }
+
+        puntoPendiente = punto
+        enviar(punto)
     }
 
-    override fun onDestroy() {
-        botonUbicacion.removeCallbacks(avanzarElRecorrido)
-        super.onDestroy()
+    private fun enviar(punto: PuntoCapturado) {
+        pintarCapturando()
+        LlamadaUbicacion.enviar(punto.latitud, punto.longitud)
+    }
+
+    /**
+     * Los tres desenlaces del cliente de la capa de red, cada uno con su estado de pantalla.
+     *
+     * El punto guardado solo sobrevive al fallo de red, que es el unico que se arregla mandando
+     * lo mismo otra vez: si el servidor contesto, ya vio el punto, y repetirlo no cambiaria su
+     * respuesta.
+     */
+    private fun alResponderElServidor(resultado: Resultado) {
+        when (resultado) {
+            is Resultado.Exito -> {
+                puntoPendiente = null
+                pintarLaParadaAsentada(resultado)
+            }
+
+            is Resultado.ErrorHttp -> {
+                puntoPendiente = null
+                pintarElErrorDelServidor(resultado)
+            }
+
+            is Resultado.ErrorRed -> pintarError(getString(R.string.ubicacion_error_envio))
+        }
+    }
+
+    /**
+     * La parada que quedo asentada. `creada` es el campo del cuerpo y dice cual de los dos
+     * desenlaces fue: false llega con el 200 de la parada vigente corregida, true con el 201 de
+     * la parada nueva que se registro porque no habia ninguna vigente.
+     */
+    private fun pintarLaParadaAsentada(resultado: Resultado.Exito) {
+        val parada = resultado.datos.optJSONObject("parada")
+
+        if (parada == null) {
+            pintarError(getString(R.string.ubicacion_error_servidor, 200))
+            return
+        }
+
+        pintarParada(Parada.desdeJson(parada), resultado.datos.optBoolean("creada"))
+    }
+
+    /**
+     * Cada error del servicio a su sitio.
+     *
+     * Se mira el nombre del error y no solo el codigo, porque el 403 cubre dos cosas distintas:
+     * un token vencido, que se arregla volviendo a ingresar, y un rol sin permiso, que no se
+     * arregla con eso y donde echar al usuario al formulario seria mentirle.
+     */
+    private fun pintarElErrorDelServidor(error: Resultado.ErrorHttp) {
+        val sesionPerdida = (error.codigo == 401 && error.error == "no_autenticado") ||
+            (error.codigo == 403 && error.error == "token_invalido")
+
+        when {
+            sesionPerdida -> volverAIngreso(getString(R.string.ubicacion_sesion_caducada))
+
+            error.codigo == 403 && error.error == "rol_no_autorizado" ->
+                pintarError(getString(R.string.ubicacion_rol_no_autorizado))
+
+            // El 422 trae el texto del validador para la coordenada que fallo: se pinta tal cual,
+            // que dice mas que cualquier frase propia.
+            error.codigo == 422 && error.mensaje.isNotEmpty() -> pintarError(error.mensaje)
+
+            else -> pintarError(getString(R.string.ubicacion_error_servidor, error.codigo))
+        }
     }
 }
