@@ -83,7 +83,10 @@
     <!-- Un dispositivo sin la pantalla de ajustes a la que apunta la accion del aviso. -->
     <string name="ubicacion_ajustes_no_disponibles">Este dispositivo no tiene esa pantalla de ajustes. Ábrelos a mano desde el teléfono.</string>
 
-    <!-- Motivos que pinta el issue #8 -->
+    <!-- Motivos del reporte del punto -->
     <string name="ubicacion_error_sin_punto">No se obtuvo un punto reciente. Vuelve a intentarlo.</string>
     <string name="ubicacion_sesion_caducada">La sesión caducó. Vuelve a ingresar.</string>
+    <string name="ubicacion_error_envio">No se pudo enviar el punto, pero quedó guardado: pulsa el botón para reintentar el envío sin volver a leer el GPS.</string>
+    <string name="ubicacion_rol_no_autorizado">Esta cuenta no administra la agenda de paradas, así que no puede reportar el punto del truck.</string>
+    <string name="ubicacion_error_servidor">El servidor respondió con un error (%1$d). Vuelve a intentarlo en un momento.</string>
 </resources>
