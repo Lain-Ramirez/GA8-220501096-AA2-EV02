@@ -69,18 +69,45 @@ internal object RecorridoUbicacion {
     /**
      * Los pasos, en orden. Cada uno recibe la pantalla y llama a la funcion que pinta ese estado,
      * que es la misma que llamara el issue #8.
+     *
+     * El estado «capturando» no es un paso: lo pinta la actividad al pulsar el boton, y este paso
+     * es lo que llega despues. Asi el recorrido ve el indicador en cada vuelta sin quedarse
+     * encallado en el, porque capturando deshabilita el boton y el boton es lo que avanza.
+     *
+     * Los cuatro avisos empiezan por devolver el boton a disponible, igual que tendra que hacer
+     * el issue #8: un aviso no reactiva el boton por su cuenta —solo dice que ocurrio—, asi que
+     * quien lo enseña tiene que decir tambien en que estado se queda la pantalla. Y se enseña de
+     * uno en uno, para que la captura del issue #12 salga con un aviso y no con los cuatro.
      */
     val pasos: List<(ActividadUbicacion) -> Unit> = listOf(
-        { pantalla -> pantalla.pintarCapturando() },
         { pantalla -> pantalla.pintarParada(parada(VIGENTE), creada = false) },
         { pantalla -> pantalla.pintarParada(parada(NUEVA), creada = true) },
         { pantalla -> pantalla.pintarParada(parada(INCOMPLETA), creada = false) },
         { pantalla -> pantalla.pintarErrorSinPunto() },
-        { pantalla -> pantalla.mostrarAviso(AvisoUbicacion.PERMISO_DENEGADO) },
-        { pantalla -> pantalla.mostrarAviso(AvisoUbicacion.PERMISO_DENEGADO_SIEMPRE) },
-        { pantalla -> pantalla.mostrarAviso(AvisoUbicacion.PROVEEDOR_APAGADO) },
-        { pantalla -> pantalla.mostrarAviso(AvisoUbicacion.PUNTO_APROXIMADO) },
-        { pantalla -> pantalla.explicarPermiso() },
-        { pantalla -> pantalla.pintarDisponible() },
+        { pantalla ->
+            pantalla.pintarDisponible()
+            pantalla.ocultarAvisos()
+            pantalla.mostrarAviso(AvisoUbicacion.PERMISO_DENEGADO)
+        },
+        { pantalla ->
+            pantalla.pintarDisponible()
+            pantalla.ocultarAvisos()
+            pantalla.mostrarAviso(AvisoUbicacion.PERMISO_DENEGADO_SIEMPRE)
+        },
+        { pantalla ->
+            pantalla.pintarDisponible()
+            pantalla.ocultarAvisos()
+            pantalla.mostrarAviso(AvisoUbicacion.PROVEEDOR_APAGADO)
+        },
+        { pantalla ->
+            pantalla.pintarDisponible()
+            pantalla.ocultarAvisos()
+            pantalla.mostrarAviso(AvisoUbicacion.PUNTO_APROXIMADO)
+        },
+        { pantalla ->
+            pantalla.pintarDisponible()
+            pantalla.ocultarAvisos()
+            pantalla.explicarPermiso()
+        },
     )
 }

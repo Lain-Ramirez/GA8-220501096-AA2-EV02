@@ -48,6 +48,9 @@ class ActividadUbicacion : AppCompatActivity() {
         private const val CLAVE_CORREO = "correo_de_la_sesion"
         private const val CLAVE_PASO = "paso_del_recorrido"
 
+        /** Lo que dura el indicador en el recorrido provisional. Lo borra el issue #8. */
+        private const val ESPERA_DEL_RECORRIDO = 1_500L
+
         fun intencion(origen: Context, nombre: String?, rol: String?): Intent =
             Intent(origen, ActividadUbicacion::class.java)
                 .putExtra(EXTRA_NOMBRE, nombre)
@@ -138,6 +141,8 @@ class ActividadUbicacion : AppCompatActivity() {
             pasoDelRecorrido = estadoGuardado.getInt(CLAVE_PASO)
             pintar(EstadoUbicacion.leerDe(estadoGuardado))
             restaurarAvisos(estadoGuardado.getStringArray(CLAVE_AVISOS))
+
+            if (estado is EstadoUbicacion.Capturando) programarElRecorrido()
         }
     }
 
@@ -187,6 +192,11 @@ class ActividadUbicacion : AppCompatActivity() {
     /**
      * Enseña uno de los cuatro avisos reservados. Se puede llamar varias veces: cada aviso tiene
      * su sitio y no tapa a los demas.
+     *
+     * **No cambia el estado del boton.** Un aviso solo cuenta que ocurrio algo, asi que quien lo
+     * enseña tiene que decir ademas en que estado se queda la pantalla —normalmente disponible,
+     * para que se pueda reintentar—. Si no, el boton se queda como estuviera, y si estaba
+     * capturando queda deshabilitado con el indicador dando vueltas para siempre.
      */
     internal fun mostrarAviso(aviso: AvisoUbicacion) {
         avisosVisibles.add(aviso)
@@ -335,12 +345,33 @@ class ActividadUbicacion : AppCompatActivity() {
     // Provisional: lo sustituye el issue #8 por la captura y el envio de verdad.
     // ---------------------------------------------------------------------------------------
 
-    private fun alPulsarElBoton() {
-        if (pasoDelRecorrido == 0) ocultarAvisos()
-
+    private val avanzarElRecorrido = Runnable {
         val paso = pasoDelRecorrido % RecorridoUbicacion.pasos.size
 
         RecorridoUbicacion.pasos[paso](this)
         pasoDelRecorrido = (paso + 1) % RecorridoUbicacion.pasos.size
+    }
+
+    /**
+     * Cada pulsacion enseña el indicador y, pasado un momento, el siguiente estado del recorrido.
+     *
+     * El indicador tiene que irse solo: mientras esta puesto el boton queda deshabilitado, y el
+     * boton es lo unico que avanza el recorrido, asi que dejarlo fijo encallaria la pantalla.
+     */
+    private fun alPulsarElBoton() {
+        if (pasoDelRecorrido == 0) ocultarAvisos()
+
+        pintarCapturando()
+        programarElRecorrido()
+    }
+
+    private fun programarElRecorrido() {
+        botonUbicacion.removeCallbacks(avanzarElRecorrido)
+        botonUbicacion.postDelayed(avanzarElRecorrido, ESPERA_DEL_RECORRIDO)
+    }
+
+    override fun onDestroy() {
+        botonUbicacion.removeCallbacks(avanzarElRecorrido)
+        super.onDestroy()
     }
 }
