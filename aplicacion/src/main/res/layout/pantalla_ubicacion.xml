@@ -176,7 +176,7 @@
 
             <Button
                 android:id="@+id/boton_ajustes_aplicacion"
-                style="?attr/materialButtonOutlinedStyle"
+                style="@style/Menu08.AccionAviso"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -200,7 +200,7 @@
 
             <Button
                 android:id="@+id/boton_ajustes_ubicacion"
-                style="?attr/materialButtonOutlinedStyle"
+                style="@style/Menu08.AccionAviso"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"

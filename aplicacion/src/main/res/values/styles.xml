@@ -28,6 +28,20 @@
         <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
+    <!--
+        La accion de un aviso: los ajustes de la aplicacion y los de ubicacion del telefono.
+
+        Un boton delineado se pinta por omision con colorPrimary, que es el color del contenido
+        sobre la superficie de la pantalla. Estos dos van dentro de un bloque de colorErrorContainer,
+        y ahi el color de contenido que le toca a Material 3 es colorOnErrorContainer: el texto y el
+        trazo salen del mismo par que el resto del aviso en vez de traerse el rojo de la marca a un
+        fondo que no es el suyo.
+    -->
+    <style name="Menu08.AccionAviso" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:textColor">?attr/colorOnErrorContainer</item>
+        <item name="strokeColor">?attr/colorOnErrorContainer</item>
+    </style>
+
     <!-- Los cuatro avisos y la nota del permiso: mismo bloque, distinto fondo. -->
     <style name="Menu08.Aviso" parent="">
         <item name="android:layout_width">match_parent</item>
