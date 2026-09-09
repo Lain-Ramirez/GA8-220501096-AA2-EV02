@@ -216,13 +216,6 @@
             android:textColor="?attr/colorOnSecondaryContainer"
             android:visibility="gone" />
 
-        <Button
-            android:id="@+id/boton_ubicacion"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="@string/boton_ubicacion_disponible" />
-
         <ProgressBar
             android:id="@+id/progreso_ubicacion"
             android:layout_width="wrap_content"
@@ -233,7 +226,13 @@
             android:indeterminate="true"
             android:visibility="gone" />
 
-        <!-- La hora del ultimo envio, o el motivo del fallo: es lo que separa correcto de error. -->
+        <!--
+            La hora del ultimo envio, o el motivo del fallo: es lo que separa correcto de error.
+
+            Va encima del boton, y no debajo, porque con la ficha desplegada el boton queda al
+            filo de la pantalla: cualquier cosa puesta despues de el nace fuera de la vista, y la
+            hora del envio es justo lo que se acaba de pedir ver.
+        -->
         <TextView
             android:id="@+id/texto_estado"
             android:layout_width="match_parent"
@@ -241,6 +240,13 @@
             android:layout_marginTop="16dp"
             android:textAppearance="?attr/textAppearanceBodyMedium"
             android:visibility="gone" />
+
+        <Button
+            android:id="@+id/boton_ubicacion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/boton_ubicacion_disponible" />
 
     </LinearLayout>
 
