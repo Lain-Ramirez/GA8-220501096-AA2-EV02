@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Primera pantalla del APK. Va dentro de un ScrollView a proposito: en horizontal, y con el
+    teclado abierto, los dos campos y el boton no caben en pantalla y sin el contenedor el boton
+    quedaria fuera de alcance.
+-->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/pantalla_ingreso"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:id="@+id/texto_titulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ingreso_titulo"
+            android:textAppearance="?attr/textAppearanceHeadlineMedium"
+            android:textColor="?attr/colorPrimary" />
+
+        <TextView
+            android:id="@+id/texto_subtitulo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="32dp"
+            android:text="@string/ingreso_subtitulo"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/campo_correo"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/ingreso_correo"
+            app:errorEnabled="true">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/entrada_correo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionNext"
+                android:inputType="textEmailAddress"
+                android:maxLines="1" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!--
+            saveEnabled="false" en la contrasena, y solo en ella: sin esto el sistema guarda el
+            texto tecleado en el Bundle de estado, que sobrevive al giro y a la muerte del
+            proceso. La contrasena no entra ahi. El correo si se guarda, que es lo que pide el
+            criterio del giro.
+        -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/campo_contrasena"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="@string/ingreso_contrasena"
+            app:endIconMode="password_toggle"
+            app:errorEnabled="true">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/entrada_contrasena"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionGo"
+                android:inputType="textPassword"
+                android:maxLines="1"
+                android:saveEnabled="false" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!--
+            La zona de mensaje: el 401, el fallo de red y el motivo con el que se vuelve aqui
+            desde una sesion caducada. Queda pegada al boton para que siga a la vista con el
+            teclado abierto.
+        -->
+        <TextView
+            android:id="@+id/texto_mensaje"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/fondo_mensaje"
+            android:padding="12dp"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnErrorContainer"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/boton_ingresar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/ingreso_boton" />
+
+        <ProgressBar
+            android:id="@+id/progreso"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="24dp"
+            android:contentDescription="@string/ingreso_progreso"
+            android:indeterminate="true"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+</ScrollView>

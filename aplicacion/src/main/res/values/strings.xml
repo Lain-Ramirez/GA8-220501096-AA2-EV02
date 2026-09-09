@@ -1,4 +1,25 @@
 <resources>
     <string name="nombre_aplicacion">Menu08 Movil</string>
-    <string name="texto_bienvenida">Menu08 movil</string>
+
+    <!-- Pantalla de ingreso -->
+    <string name="ingreso_titulo">Menu08</string>
+    <string name="ingreso_subtitulo">Entra con la cuenta del food truck para reportar dónde está parado el truck.</string>
+    <string name="ingreso_correo">Correo</string>
+    <string name="ingreso_contrasena">Contraseña</string>
+    <string name="ingreso_boton">Ingresar</string>
+    <string name="ingreso_progreso">Ingresando</string>
+
+    <!-- Lo que corta antes de salir a la red -->
+    <string name="ingreso_falta_correo">Escribe tu correo.</string>
+    <string name="ingreso_correo_sin_arroba">El correo tiene que llevar una arroba.</string>
+    <string name="ingreso_falta_contrasena">Escribe tu contraseña.</string>
+
+    <!-- Lo que contesta adso.menu08.com -->
+    <string name="ingreso_error_credenciales">Correo o contraseña incorrectos.</string>
+    <string name="ingreso_error_datos_incompletos">Faltan el correo o la contraseña.</string>
+    <string name="ingreso_error_servidor">El servidor respondió con un error (%1$d). Vuelve a intentarlo en un momento.</string>
+    <string name="ingreso_error_red">No se pudo conectar con adso.menu08.com. Revisa la conexión e inténtalo de nuevo.</string>
+
+    <!-- Pantalla de ubicación: se construye en el issue #7 -->
+    <string name="ubicacion_en_construccion">Pantalla de ubicación. Se construye en el issue #7.</string>
 </resources>
