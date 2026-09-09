@@ -38,6 +38,12 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
+    // AGP 8 y posteriores traen buildConfig desactivado. Sin esto, BuildConfig.DEBUG no se
+    // resuelve, y es la guarda que deja las trazas de la capa de red fuera del APK de entrega.
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {

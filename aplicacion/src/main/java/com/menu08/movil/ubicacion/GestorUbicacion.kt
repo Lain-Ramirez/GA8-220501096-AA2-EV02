@@ -14,7 +14,6 @@ import android.os.Looper
 import android.os.SystemClock
 import androidx.annotation.RequiresPermission
 import androidx.core.content.ContextCompat
-import java.util.Locale
 
 /**
  * El punto donde esta parado el truck, ya formateado para el servicio.
@@ -277,19 +276,28 @@ object GestorUbicacion {
     }
 
     /**
-     * Las dos coordenadas con siete decimales, que es lo que acepta la columna y lo que exige el
-     * validador del servidor.
+     * El punto del proveedor, comprobado y escrito en el formato del servidor.
      *
-     * Locale.US no es un descuido: con la configuracion en espanol, %f escribe la coma decimal.
-     * El servicio la acepta y la normaliza, pero mandar siempre el punto deja una sola forma
-     * posible del cuerpo y una prueba que no depende del idioma del telefono.
+     * El rango y el formateo viven en SaneadorCoordenadas, que no depende del marco de Android y
+     * por eso se puede probar en la JVM. Aqui solo se decide que hacer con su veredicto.
+     *
+     * Un punto fuera de rango se descarta como si no se hubiera capturado: la pantalla dira que
+     * no se obtuvo posicion, que es la verdad, en vez de gastar una peticion para que el
+     * servidor conteste 422. No deberia ocurrir con un proveedor sano, pero un punto con NaN o
+     * infinito llegaria hasta aqui, y de ahi al cuerpo del POST, sin este corte.
      */
     private fun formatear(punto: Location?): PuntoCapturado? {
         if (punto == null) return null
 
+        if (!SaneadorCoordenadas.latitudValida(punto.latitude) ||
+            !SaneadorCoordenadas.longitudValida(punto.longitude)
+        ) {
+            return null
+        }
+
         return PuntoCapturado(
-            latitud = String.format(Locale.US, "%.7f", punto.latitude),
-            longitud = String.format(Locale.US, "%.7f", punto.longitude),
+            latitud = SaneadorCoordenadas.formatear(punto.latitude),
+            longitud = SaneadorCoordenadas.formatear(punto.longitude),
         )
     }
 

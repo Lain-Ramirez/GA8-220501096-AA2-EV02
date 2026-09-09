@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Politica de red del modulo movil.
+
+    Con targetSdk 35 el texto claro ya viene prohibido por omision, pero eso depende del valor
+    del objetivo: bajarlo algun dia volveria a permitirlo sin que nadie lo note. Declarado aqui,
+    la prohibicion es explicita y no cambia aunque cambie el objetivo.
+
+    El unico entorno del proyecto es https://adso.menu08.com. No hay dominio de pruebas, no hay
+    servidor local y no hay excepcion de depuracion: si alguna vez hiciera falta uno, se anade
+    aqui a la vista de todos y no escondido en el codigo.
+-->
+<network-security-config>
+
+    <!-- Todo lo que no este declarado abajo: nada de texto claro. -->
+    <base-config cleartextTrafficPermitted="false" />
+
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="false">adso.menu08.com</domain>
+    </domain-config>
+
+</network-security-config>
