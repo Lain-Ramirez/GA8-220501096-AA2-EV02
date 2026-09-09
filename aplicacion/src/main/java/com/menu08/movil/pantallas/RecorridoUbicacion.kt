@@ -34,14 +34,21 @@ internal object RecorridoUbicacion {
         }
     """
 
-    /** Parada nueva: 201, la que registra el servicio cuando no habia ninguna vigente. */
+    /**
+     * Parada nueva: 201, la que registra el servicio cuando no habia ninguna vigente.
+     *
+     * El dia y la fecha del nombre tienen que concordar, porque el servicio los saca del mismo
+     * instante: el 9 de septiembre de 2026 es miercoles, asi que `dia_semana` es 3. Y de paso el
+     * recorrido resuelve dos dias distintos —el 2 de la parada vigente y este 3—, en vez de
+     * enseñar dos veces la misma casilla del array.
+     */
     private const val NUEVA = """
         {
           "nombre": "Punto reportado 2026-09-09 08:09",
           "referencia": "Registrado desde la aplicacion movil",
           "latitud": "4.6767000",
           "longitud": "-74.0483000",
-          "dia_semana": 2,
+          "dia_semana": 3,
           "hora_inicio": "08:09:00",
           "hora_fin": "08:09:00"
         }
