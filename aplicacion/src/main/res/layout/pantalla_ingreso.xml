@@ -97,22 +97,27 @@
             android:textColor="?attr/colorOnErrorContainer"
             android:visibility="gone" />
 
+        <!--
+            Encima del boton: con el teclado abierto la ventana se encoge, y lo que quede despues
+            del boton nace fuera de la vista. El indicador es lo que dice que la peticion sigue en
+            curso, asi que tiene que estar donde se mire.
+        -->
+        <ProgressBar
+            android:id="@+id/progreso"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:contentDescription="@string/ingreso_progreso"
+            android:indeterminate="true"
+            android:visibility="gone" />
+
         <Button
             android:id="@+id/boton_ingresar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="@string/ingreso_boton" />
-
-        <ProgressBar
-            android:id="@+id/progreso"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="24dp"
-            android:contentDescription="@string/ingreso_progreso"
-            android:indeterminate="true"
-            android:visibility="gone" />
 
     </LinearLayout>
 
