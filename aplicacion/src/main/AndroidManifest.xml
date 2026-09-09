@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Hablar con https://adso.menu08.com: ingreso y reporte del punto. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!--
+        Los dos permisos de ubicacion van juntos a proposito. Desde Android 12 el sistema
+        descarta una solicitud de ubicacion fina que no venga acompanada de la aproximada en
+        la misma peticion, y el usuario puede conceder solo la aproximada.
+    -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/reglas_extraccion_datos"
+        android:fullBackupContent="@xml/reglas_copia_seguridad"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/nombre_aplicacion"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Tema.Menu08Movil">
+        <activity
+            android:name=".pantallas.ActividadPrincipal"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

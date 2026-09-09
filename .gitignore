@@ -1,0 +1,18 @@
+# Compilaciones de Gradle
+/build
+/aplicacion/build
+
+# Estado local de Gradle
+.gradle/
+
+# Ruta del SDK de esta maquina: la escribe Android Studio y no vale para otra
+local.properties
+
+# Configuracion del IDE
+.idea/
+*.iml
+
+# Capturas y compilacion nativa
+/captures
+.externalNativeBuild
+.cxx

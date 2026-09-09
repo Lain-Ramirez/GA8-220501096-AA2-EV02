@@ -1,0 +1,4 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Tema base de la aplicacion. -->
+    <style name="Tema.Menu08Movil" parent="Theme.Material3.DayNight.NoActionBar" />
+</resources>

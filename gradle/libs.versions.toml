@@ -1,0 +1,30 @@
+# Catalogo de versiones. Todo lo que se compila sale de aqui, y aqui se ve de un vistazo que
+# la aplicacion no arrastra ninguna biblioteca de terceros: solo AndroidX, el Material de
+# Google que exige el tema, las corrutinas de Kotlin y las bibliotecas de prueba.
+
+[versions]
+agp = "9.4.0"
+coreKtx = "1.10.1"
+appcompat = "1.6.1"
+material = "1.10.0"
+constraintlayout = "2.1.4"
+coroutines = "1.10.2"
+junit = "4.13.2"
+junitVersion = "1.1.5"
+espressoCore = "3.5.1"
+
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+# Se fija en 1.10.2, que no es la ultima: 1.11.0 arrastra kotlin-stdlib 2.2.20 y subiria la
+# biblioteca de Kotlin por encima de la del compilador que trae AGP 9.4.0 (2.2.10). Con 1.10.2
+# el arbol de dependencias queda sin una sola flecha de sustitucion de version.
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
