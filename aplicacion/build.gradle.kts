@@ -8,6 +8,11 @@
 //     leer el punto con requestLocationUpdates() y darse de baja tras la primera lectura, asi
 //     que la captura del GPS conserva esa rama alternativa.
 //
+// AGP 9.4.0 compila Kotlin sin declarar `org.jetbrains.kotlin.android`: el complemento viaja
+// dentro del propio complemento de Android (kotlin-gradle-plugin 2.2.10), por eso no aparece
+// en el catalogo de versiones. Declararlo a mano seria anadir una dependencia de compilacion
+// que este proyecto no necesita.
+//
 // compileSdk y targetSdk van en 35: se compila y se declara comportamiento contra la misma
 // version, que es lo que Google exige para publicar y lo que evita sorpresas de borde a borde.
 

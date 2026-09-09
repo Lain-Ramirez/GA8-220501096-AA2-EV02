@@ -1,0 +1,7 @@
+# Reglas de conservacion para R8. Desde AGP 9 sustituyen al antiguo proguard-rules.pro:
+# el complemento junta todos los archivos de src/main/keepRules y se los pasa a R8.
+#
+# No hace falta ninguna todavia. El APK de entrega se firma en su propio issue, y ahi se
+# decidira si se ofusca; mientras tanto la compilacion de depuracion no reduce nada.
+#
+# https://d.android.com/r/tools/r8/keep-rules
