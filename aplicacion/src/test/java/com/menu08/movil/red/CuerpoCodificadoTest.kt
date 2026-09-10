@@ -4,9 +4,15 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 /**
- * Prueba local del cuerpo de formulario. Corre en la maquina de desarrollo, sin dispositivo y
- * sin red, porque cuerpoCodificado() es una funcion pura: no importa nada de android.* ni de
- * org.json, que en una prueba de JVM son cuerpos reducidos a excepcion.
+ * Prueba local del cuerpo de formulario. Corre en la maquina de desarrollo, sin dispositivo y sin
+ * red, porque cuerpoCodificado() es una funcion pura: lo unico que usa es URLEncoder.
+ *
+ * Un matiz que conviene dejar escrito, porque no se ve a simple vista. La funcion vive en
+ * ClienteMenu08.kt, y ESE ARCHIVO SI importa android.util.Log y org.json —desde el #14 es donde
+ * se lee el cuerpo de la respuesta—, que en una prueba de JVM son cuerpos reducidos a excepcion.
+ * Aun asi la prueba no los toca: al ser una funcion de nivel superior, cuerpoCodificado() compila
+ * a la clase fachada ClienteMenu08Kt, que es distinta del `object ClienteMenu08`. Cargar la
+ * fachada no carga el objeto, asi que ninguno de esos cuerpos llega a ejecutarse.
  */
 class CuerpoCodificadoTest {
 

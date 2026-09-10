@@ -61,9 +61,6 @@ object GestorUbicacion {
      */
     private const val ESPERA_MS = 20_000L
 
-    /** Dos minutos. Mas viejo que esto, el punto de reserva ya no dice donde esta el truck. */
-    private const val VEJEZ_MAXIMA_NANOS = 2L * 60L * 1_000_000_000L
-
     /**
      * Los dos unicos proveedores que se usan, en orden de preferencia.
      *
@@ -270,9 +267,16 @@ object GestorUbicacion {
     )
     private fun reserva(gestor: LocationManager, proveedor: String): Location? {
         val punto = gestor.getLastKnownLocation(proveedor) ?: return null
-        val edad = SystemClock.elapsedRealtimeNanos() - punto.elapsedRealtimeNanos
 
-        return if (edad <= VEJEZ_MAXIMA_NANOS) punto else null
+        // La regla de los dos minutos vive en AntiguedadPunto, que no depende del marco de
+        // Android y por eso se comprueba en una prueba de JVM. Aqui solo se leen las dos marcas
+        // del reloj monotono y se le pasan.
+        val reciente = AntiguedadPunto.esReciente(
+            nanosPunto = punto.elapsedRealtimeNanos,
+            nanosAhora = SystemClock.elapsedRealtimeNanos(),
+        )
+
+        return if (reciente) punto else null
     }
 
     /**

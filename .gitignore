@@ -5,6 +5,10 @@
 # Estado local de Gradle
 .gradle/
 
+# Sesiones del compilador de Kotlin. Las escribe cada compilacion y no describen el proyecto:
+# versionadas, cada build de cada maquina ensucia el estado del repositorio con un archivo nuevo.
+.kotlin/
+
 # Ruta del SDK de esta maquina: la escribe Android Studio y no vale para otra
 local.properties
 

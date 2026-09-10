@@ -30,9 +30,9 @@ class LlamadaEnVuelo {
     private var trabajo: Job? = null
 
     /** El resultado que llego mientras no habia ninguna pantalla escuchando (un giro). */
-    private var pendiente: Resultado? = null
+    private var pendiente: RespuestaMenu08? = null
 
-    private var oyente: ((Resultado) -> Unit)? = null
+    private var oyente: ((RespuestaMenu08) -> Unit)? = null
 
     /** Con esto la pantalla se pinta cargando y el boton no dispara una segunda peticion. */
     val enCurso: Boolean
@@ -43,7 +43,7 @@ class LlamadaEnVuelo {
      * criterio de la segunda pulsacion: el boton deshabilitado tapa el caso normal y esto tapa el
      * resto, incluida la tecla de accion del teclado.
      */
-    fun lanzar(peticion: suspend () -> Resultado) {
+    fun lanzar(peticion: suspend () -> RespuestaMenu08) {
         if (enCurso) return
 
         pendiente = null
@@ -55,7 +55,7 @@ class LlamadaEnVuelo {
      * para no retener una actividad ya destruida. Si el resultado llego durante ese hueco, se
      * entrega aqui mismo.
      */
-    fun escuchar(nuevo: ((Resultado) -> Unit)?) {
+    fun escuchar(nuevo: ((RespuestaMenu08) -> Unit)?) {
         oyente = nuevo
 
         val guardado = pendiente ?: return
@@ -87,7 +87,7 @@ class LlamadaEnVuelo {
      * que se abandono la peticion en olvidar(), y tragarsela dejaria la pantalla esperando un
      * resultado que nunca va a llegar.
      */
-    private suspend fun intentar(peticion: suspend () -> Resultado): Resultado = try {
+    private suspend fun intentar(peticion: suspend () -> RespuestaMenu08): RespuestaMenu08 = try {
         peticion()
     } catch (e: CancellationException) {
         throw e
@@ -95,7 +95,7 @@ class LlamadaEnVuelo {
         Resultado.ErrorRed(e)
     }
 
-    private fun entregar(resultado: Resultado) {
+    private fun entregar(resultado: RespuestaMenu08) {
         val actual = oyente
 
         if (actual == null) {
