@@ -42,4 +42,17 @@
     <color name="md3_on_surface_variant">#52443c</color>
     <color name="md3_outline">#85736a</color>
 
+    <!--
+        Fondo del icono del lanzador: el dorado de md3_secondary_container.
+
+        Se eligió el dorado y no el crema de la superficie porque en el lanzador el icono compite
+        con el fondo de pantalla: sobre uno claro, un icono casi blanco desaparece. El dorado es
+        además el color que `docs/interfaz.md` llama «la marca», y deja al camión rojo con
+        contraste de sobra.
+
+        Va con nombre propio y SOLO en este archivo: values-night no lo redefine, porque el icono
+        no cambia con el modo oscuro del teléfono y el lanzador además lo tiene cacheado.
+    -->
+    <color name="icono_fondo">#f5df93</color>
+
 </resources>
