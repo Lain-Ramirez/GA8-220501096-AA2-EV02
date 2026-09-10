@@ -1,18 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Icono adaptativo redondo. Mismas capas que ic_launcher: la forma la pone la mascara del
-    lanzador, no el recurso, asi que las dos declaraciones son iguales a proposito.
+    Icono adaptativo redondo.
 
-    El fondo es un color liso y no un vector: el dorado de --secondary-container, que es el mismo
-    que llevan cocido los bitmaps de respaldo de mipmap-*dpi. Va en values/colors.xml y NO en values-night: el icono del
-    lanzador no cambia con el modo oscuro del telefono, y el lanzador ademas lo cachea.
+    Declara las mismas capas que ic_launcher, y no es una copia por descuido: en un icono
+    adaptativo la forma la recorta la mascara del lanzador, no el recurso. Quien pide el redondo
+    recibe estas dos capas con mascara circular.
 
-    La capa de delante es el camion ya metido en la zona segura por el generador: la mascara del
-    lanzador —circulo, cuadrado redondeado, gota, segun el fabricante— solo respeta los 66 dp
-    centrales de los 108, asi que un dibujo a sangre saldria mordido por los bordes.
-
-    monochrome apunta a la misma capa. Para el icono tematico de Android 13 el sistema se queda
-    solo con el canal alfa y lo tiñe, y la silueta del camion se reconoce igual de bien.
+    Lo que si cambia entre los dos son los BITMAPS de respaldo de mipmap-*dpi, que son para API 24
+    y 25: alli no hay mascara del sistema, asi que ic_launcher.png trae el fondo con las esquinas
+    redondeadas y ic_launcher_round.png lo trae en circulo.
 -->
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
     <background android:drawable="@color/icono_fondo" />
