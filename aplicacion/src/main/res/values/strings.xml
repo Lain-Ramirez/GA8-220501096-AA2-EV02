@@ -49,6 +49,13 @@
     <string name="ubicacion_horario">%1$s a %2$s</string>
 
     <!--
+        La misma frase que la web pone en la parada vigente cuando la franja termina al día
+        siguiente. Es el caso del truck nocturno, y también el de la parada que asienta el propio
+        reporte del GPS, que se escribe con las dos horas iguales para quedar vigente 24 horas.
+    -->
+    <string name="ubicacion_horario_nocturno">%1$s a %2$s (cierra al día siguiente)</string>
+
+    <!--
         Las tres columnas que admiten nulo en la tabla `ubicaciones`. Un nulo se lee con estas
         frases y nunca como 0.0, que en el mar de Guinea es un punto de verdad.
     -->
