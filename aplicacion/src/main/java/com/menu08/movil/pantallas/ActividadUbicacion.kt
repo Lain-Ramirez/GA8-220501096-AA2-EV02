@@ -407,10 +407,32 @@ class ActividadUbicacion : AppCompatActivity() {
         valorNombre.text = parada.nombre
         valorReferencia.text = parada.referencia ?: getString(R.string.ubicacion_sin_referencia)
         valorDia.text = nombreDelDia(parada.diaSemana)
-        valorHorario.text =
-            getString(R.string.ubicacion_horario, parada.horaInicio, parada.horaFin)
+        valorHorario.text = horarioDe(parada)
         valorLatitud.text = parada.latitud ?: getString(R.string.ubicacion_sin_punto)
         valorLongitud.text = parada.longitud ?: getString(R.string.ubicacion_sin_punto)
+    }
+
+    /**
+     * La franja horaria, escrita como la escribe la web.
+     *
+     * Dos diferencias con lo que se pintaba antes, y las dos vienen de `panel/ubicaciones.php`:
+     * los segundos se recortan —la base devuelve TIME como `18:00:00` y en la ficha sobran— y
+     * una franja que termina al dia siguiente lo dice. Sin lo segundo, la parada que asienta el
+     * propio reporte del GPS salia como «10:49 a 10:49», que no se entiende: son las dos horas
+     * iguales con las que `asentarPunto()` la deja vigente 24 horas.
+     */
+    private fun horarioDe(parada: Parada): String {
+        val plantilla = if (HorarioParada.cierraAlDiaSiguiente(parada.horaInicio, parada.horaFin)) {
+            R.string.ubicacion_horario_nocturno
+        } else {
+            R.string.ubicacion_horario
+        }
+
+        return getString(
+            plantilla,
+            HorarioParada.corta(parada.horaInicio),
+            HorarioParada.corta(parada.horaFin),
+        )
     }
 
     /**
