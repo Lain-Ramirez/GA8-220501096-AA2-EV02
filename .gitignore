@@ -20,3 +20,17 @@ local.properties
 /captures
 .externalNativeBuild
 .cxx
+
+# Firma del APK de entrega. Los dos archivos NO viven igual:
+#
+#   - El almacen (*.jks) se guarda FUERA del arbol del repositorio. Estas reglas son la red por
+#     si alguien lo copia aqui sin darse cuenta.
+#   - clave_firma.properties SI vive dentro, junto a settings.gradle.kts, para que Gradle lo
+#     encuentre por ruta relativa. Lleva las contrasenas en claro, asi que no se versiona jamas.
+#
+# Quien clone el repositorio no tendra ninguno de los dos: podra compilar en depuracion, y
+# assembleRelease se detendra diciendo que falta el archivo. Es lo que se quiere: un APK de
+# entrega sin firmar no sirve para nada.
+*.jks
+*.keystore
+clave_firma.properties
