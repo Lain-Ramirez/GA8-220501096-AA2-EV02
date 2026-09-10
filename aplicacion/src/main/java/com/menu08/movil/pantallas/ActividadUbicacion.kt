@@ -55,6 +55,14 @@ class ActividadUbicacion : AppCompatActivity() {
          */
         const val EXTRA_ROL = "rol"
 
+        /**
+         * Nombre del food truck de la sesion. Viaja para que la cabecera diga sobre QUE NEGOCIO se
+         * esta reportando, que es distinto de quien entro: las cuentas de demostracion y de pruebas
+         * se llaman casi igual —«Administrador del food truck» y «Administrador de pruebas»— y dos
+         * sesiones de prueba acabaron escribiendo en la agenda real de Festin Rodante por eso.
+         */
+        const val EXTRA_FOOD_TRUCK = "food_truck"
+
         private const val CLAVE_AVISOS = "avisos_visibles"
         private const val CLAVE_CORREO = "correo_de_la_sesion"
         private const val CLAVE_PEDIDO = "ya_se_pidio_el_permiso"
@@ -64,10 +72,11 @@ class ActividadUbicacion : AppCompatActivity() {
 
         private const val CODIGO_PERMISO = 1
 
-        fun intencion(origen: Context, nombre: String?, rol: String?): Intent =
+        fun intencion(origen: Context, nombre: String?, rol: String?, foodTruck: String?): Intent =
             Intent(origen, ActividadUbicacion::class.java)
                 .putExtra(EXTRA_NOMBRE, nombre)
                 .putExtra(EXTRA_ROL, rol)
+                .putExtra(EXTRA_FOOD_TRUCK, foodTruck)
     }
 
     private lateinit var raiz: View
@@ -156,6 +165,13 @@ class ActividadUbicacion : AppCompatActivity() {
         botonUbicacion = findViewById(R.id.boton_ubicacion)
         progreso = findViewById(R.id.progreso_ubicacion)
         textoEstado = findViewById(R.id.texto_estado)
+
+        // El truck manda sobre el usuario: es el dato que evita reportar sobre el negocio
+        // equivocado, asi que va arriba y en grande, no dentro del saludo.
+        val truck = intent.getStringExtra(EXTRA_FOOD_TRUCK).orEmpty()
+        val nombreTruck = findViewById<TextView>(R.id.texto_food_truck)
+        nombreTruck.text = truck
+        nombreTruck.visibility = if (truck.isEmpty()) View.GONE else View.VISIBLE
 
         // El saludo se calla si la sesion no trajo nombre, en vez de dejar la frase a medias.
         val nombre = intent.getStringExtra(EXTRA_NOMBRE).orEmpty()

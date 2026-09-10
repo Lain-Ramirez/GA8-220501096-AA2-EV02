@@ -27,15 +27,26 @@ object SesionMovil {
     var correo: String? = null
         private set
 
+    /**
+     * El NOMBRE del food truck de la cuenta, no su identificador.
+     *
+     * Es lo que la pantalla de ubicacion enseña en la cabecera para que quien atiende vea sobre que
+     * negocio esta reportando. Nace del ingreso —el servicio lo devuelve en usuario.food_truck— y
+     * es null en el rol plataforma, que no esta asociado a ningun truck.
+     */
+    var foodTruck: String? = null
+        private set
+
     /** Hay sesion cuando hay token: sin el, POST /movil/ubicacion responde 403. */
     val abierta: Boolean
         get() = token != null
 
-    fun abrir(token: String, rol: String, nombre: String, correo: String) {
+    fun abrir(token: String, rol: String, nombre: String, correo: String, foodTruck: String?) {
         this.token = token
         this.rol = rol
         this.nombre = nombre
         this.correo = correo
+        this.foodTruck = foodTruck
     }
 
     /**
@@ -59,6 +70,7 @@ object SesionMovil {
         rol = null
         nombre = null
         correo = null
+        foodTruck = null
 
         (CookieHandler.getDefault() as? CookieManager)?.cookieStore?.removeAll()
     }
