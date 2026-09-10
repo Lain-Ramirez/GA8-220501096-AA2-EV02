@@ -16,8 +16,45 @@
 // compileSdk y targetSdk van en 35: se compila y se declara comportamiento contra la misma
 // version, que es lo que Google exige para publicar y lo que evita sorpresas de borde a borde.
 
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
+}
+
+// -----------------------------------------------------------------------------------------
+// Firma del APK de entrega.
+//
+// Las contrasenas viven en clave_firma.properties, junto a settings.gradle.kts y fuera del
+// control de versiones; el almacen vive fuera del arbol del repositorio. Ninguno de los dos se
+// puede reconstruir desde aqui, y esa es la idea: quien clone el proyecto compila en depuracion
+// sin nada mas, pero solo puede firmar la entrega quien tenga el almacen.
+//
+// El archivo declara cuatro claves:
+//
+//     almacen=/ruta/absoluta/al/almacen_menu08.jks
+//     clave_almacen=...
+//     alias=menu08
+//     clave_alias=...
+// -----------------------------------------------------------------------------------------
+val archivoFirma = rootProject.file("clave_firma.properties")
+val hayFirma = archivoFirma.exists()
+
+// Sin el archivo NO se deja compilar la variante de entrega. La alternativa seria producir un
+// APK sin firmar, que no se instala en ningun telefono y se descubre media hora despues, con el
+// archivo ya subido a algun sitio. Es mejor detenerse aqui y decir que falta.
+//
+// Se mira lo que se pidio por linea de ordenes en vez de lanzar desde la tarea: assembleRelease
+// es una tarea de ciclo de vida y sus dependencias corren ANTES que su propio doFirst, asi que
+// el aviso llegaria cuando el APK ya estuviera empaquetado.
+val pideEntrega = gradle.startParameter.taskNames.any { it.contains("Release", ignoreCase = true) }
+
+if (pideEntrega && !hayFirma) {
+    throw GradleException(
+        "Falta ${archivoFirma.absolutePath}: sin el no se puede firmar el APK de entrega.\n" +
+            "La depuracion sigue funcionando: ./gradlew aplicacion:assembleDebug\n" +
+            "Como se genera el almacen y que claves lleva el archivo, en docs/firma-apk.md."
+    )
 }
 
 android {
@@ -32,6 +69,35 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        create("entrega") {
+            if (hayFirma) {
+                val claves = Properties().apply {
+                    archivoFirma.inputStream().use { load(it) }
+                }
+
+                storeFile = file(claves.getProperty("almacen"))
+                storePassword = claves.getProperty("clave_almacen")
+                keyAlias = claves.getProperty("alias")
+                keyPassword = claves.getProperty("clave_alias")
+            }
+        }
+    }
+
+    buildTypes {
+        // La entrega se firma con el almacen propio, no con el de depuracion que Android Studio
+        // crea en cada maquina: ese lo comparten todos los proyectos y no permite actualizar la
+        // aplicacion despues con otra firma.
+        //
+        // Sin minificar, a proposito. R8 renombraria las clases y las trazas de un fallo en el
+        // telefono dejarian de decir donde ocurrio, que es justo lo que hace falta durante la
+        // sustentacion. El APK son cinco megas: no hay nada que ahorrar aqui.
+        release {
+            signingConfig = signingConfigs.getByName("entrega")
+            isMinifyEnabled = false
+        }
     }
 
     compileOptions {
