@@ -12,6 +12,7 @@ import android.text.format.DateFormat
 import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
+import android.widget.ScrollView
 import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
@@ -70,6 +71,14 @@ class ActividadUbicacion : AppCompatActivity() {
     }
 
     private lateinit var raiz: View
+
+    /**
+     * El ScrollView, que desde el #21 ya no es la raiz: la raiz es el LinearLayout que sostiene
+     * la cabecera fija con el control de salida. Se guarda aparte porque explicarPermiso() tiene
+     * que desplazar ESTO, no la raiz.
+     */
+    private lateinit var desplazable: ScrollView
+
     private lateinit var notaPermiso: TextView
     private lateinit var textoSinFicha: TextView
     private lateinit var fichaParada: View
@@ -133,6 +142,7 @@ class ActividadUbicacion : AppCompatActivity() {
             insercion
         }
 
+        desplazable = findViewById(R.id.desplazable_ubicacion)
         notaPermiso = findViewById(R.id.nota_permiso)
         textoSinFicha = findViewById(R.id.texto_sin_ficha)
         fichaParada = findViewById(R.id.ficha_parada)
@@ -154,6 +164,7 @@ class ActividadUbicacion : AppCompatActivity() {
         saludo.visibility = if (nombre.isEmpty()) View.GONE else View.VISIBLE
 
         botonUbicacion.setOnClickListener { alPulsarElBoton() }
+        findViewById<Button>(R.id.boton_salir).setOnClickListener { salir() }
 
         findViewById<Button>(R.id.boton_ajustes_aplicacion).setOnClickListener {
             abrirAjustesDeLaAplicacion()
@@ -295,7 +306,7 @@ class ActividadUbicacion : AppCompatActivity() {
      */
     internal fun explicarPermiso() {
         notaPermiso.visibility = View.VISIBLE
-        notaPermiso.post { raiz.scrollTo(0, notaPermiso.top) }
+        notaPermiso.post { desplazable.scrollTo(0, notaPermiso.top) }
     }
 
     /**
@@ -307,6 +318,34 @@ class ActividadUbicacion : AppCompatActivity() {
      */
     internal fun volverAIngreso(motivo: String) {
         startActivity(ActividadIngreso.intencion(this, correoDeLaSesion, motivo))
+        finish()
+    }
+
+    /**
+     * La salida que pide el usuario, desde el control de la cabecera (issue #21).
+     *
+     * Es pariente de volverAIngreso() pero no es lo mismo, y las dos diferencias importan:
+     *
+     *   - NO se le pasa el correo. volverAIngreso() lo manda como extra porque viene de una
+     *     sesion que acaba de caducar y es el dato mas fresco que hay; aqui no hace falta, y
+     *     pasandolo se tomaria un camino distinto del arranque en frio. Con el extra en nulo,
+     *     ActividadIngreso cae en correoRecordado(), que es de donde sale el correo cuando se
+     *     abre la aplicacion desde el lanzador: mismo recorrido, un solo comportamiento.
+     *
+     *   - NO se le pasa motivo. La sesion no se rompio, la cerro quien la tenia abierta: un
+     *     mensaje en rojo sobre el formulario diria que paso algo malo cuando no paso nada.
+     *
+     * Y antes de navegar se abandonan la captura y la peticion en vuelo. onDestroy() ya lo hace
+     * cuando isFinishing, pero corre DESPUES del startActivity: un punto que llegara en ese hueco
+     * intentaria enviarse con una sesion que ya se cerro. Abandonarlas aqui cierra esa ventana.
+     */
+    private fun salir() {
+        GestorUbicacion.olvidar()
+        LlamadaUbicacion.olvidar()
+
+        SesionMovil.cerrar()
+
+        startActivity(ActividadIngreso.intencion(this, null, null))
         finish()
     }
 
@@ -368,10 +407,32 @@ class ActividadUbicacion : AppCompatActivity() {
         valorNombre.text = parada.nombre
         valorReferencia.text = parada.referencia ?: getString(R.string.ubicacion_sin_referencia)
         valorDia.text = nombreDelDia(parada.diaSemana)
-        valorHorario.text =
-            getString(R.string.ubicacion_horario, parada.horaInicio, parada.horaFin)
+        valorHorario.text = horarioDe(parada)
         valorLatitud.text = parada.latitud ?: getString(R.string.ubicacion_sin_punto)
         valorLongitud.text = parada.longitud ?: getString(R.string.ubicacion_sin_punto)
+    }
+
+    /**
+     * La franja horaria, escrita como la escribe la web.
+     *
+     * Dos diferencias con lo que se pintaba antes, y las dos vienen de `panel/ubicaciones.php`:
+     * los segundos se recortan —la base devuelve TIME como `18:00:00` y en la ficha sobran— y
+     * una franja que termina al dia siguiente lo dice. Sin lo segundo, la parada que asienta el
+     * propio reporte del GPS salia como «10:49 a 10:49», que no se entiende: son las dos horas
+     * iguales con las que `asentarPunto()` la deja vigente 24 horas.
+     */
+    private fun horarioDe(parada: Parada): String {
+        val plantilla = if (HorarioParada.cierraAlDiaSiguiente(parada.horaInicio, parada.horaFin)) {
+            R.string.ubicacion_horario_nocturno
+        } else {
+            R.string.ubicacion_horario
+        }
+
+        return getString(
+            plantilla,
+            HorarioParada.corta(parada.horaInicio),
+            HorarioParada.corta(parada.horaFin),
+        )
     }
 
     /**

@@ -6,33 +6,99 @@
     codigo, y quien decide cuando pintarlo es el issue #8. La ficha esta oculta de partida, y con
     ella los cuatro avisos.
 -->
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<!--
+    DONDE VA EL CONTROL DE SALIDA, Y POR QUE AQUI (issue #21).
+
+    El criterio pide que este SIEMPRE VISIBLE, sin desplazar la pantalla. Eso descarta ponerlo
+    dentro del ScrollView: la ficha de la parada mas los cuatro avisos pasan del alto de un
+    telefono con holgura, y un control metido ahi se va de la vista en cuanto se baja a mirar el
+    horario o a pulsar el boton.
+
+    De las dos opciones que plantea el issue —una barra propia o un control junto a texto_saludo—
+    se toma la segunda, pero SACANDO la cabecera del desplazamiento en vez de dejarla dentro. Asi:
+
+      - El control queda al lado del saludo, que es justo donde ya se lee CON QUE CUENTA se entro.
+        Quien va a pasarle el telefono a otra persona mira ahi, y la salida esta en el mismo sitio.
+      - No hace falta anadir una MaterialToolbar, ni un recurso de menu, ni un icono: el tema es
+        Theme.Material3.DayNight.NoActionBar y montarle una barra por un solo boton seria mas
+        maquinaria de la que este APK necesita.
+      - La raiz pasa a ser un LinearLayout vertical con la cabecera fija arriba y el ScrollView
+        ocupando el resto. El id pantalla_ubicacion se queda en la raiz porque es la que recibe el
+        relleno de las barras del sistema; el desplazamiento tiene ahora su propio id.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/pantalla_ubicacion"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:orientation="vertical">
+
+    <!--
+        Cabecera fija. baselineAligned="false" porque la columna de la izquierda tiene dos lineas
+        y el boton una: sin esto el sistema alinearia el boton con la primera linea del titulo.
+    -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="24dp"
+        android:paddingTop="24dp"
+        android:paddingEnd="16dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/texto_titulo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ubicacion_titulo"
+                android:textAppearance="?attr/textAppearanceHeadlineMedium"
+                android:textColor="?attr/colorPrimary" />
+
+            <TextView
+                android:id="@+id/texto_saludo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:textColor="?attr/colorOnSurfaceVariant" />
+
+        </LinearLayout>
+
+        <!--
+            Boton de texto y no relleno: el unico boton con peso de esta pantalla es el de
+            reportar el punto, y la salida no puede competir con el. Lleva su propia descripcion
+            de contenido porque «Salir» a secas no dice a donde se sale.
+        -->
+        <Button
+            android:id="@+id/boton_salir"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/ubicacion_salir_descripcion"
+            android:text="@string/ubicacion_salir" />
+
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/desplazable_ubicacion"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp">
-
-        <TextView
-            android:id="@+id/texto_titulo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/ubicacion_titulo"
-            android:textAppearance="?attr/textAppearanceHeadlineMedium"
-            android:textColor="?attr/colorPrimary" />
-
-        <TextView
-            android:id="@+id/texto_saludo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textAppearance="?attr/textAppearanceBodySmall"
-            android:textColor="?attr/colorOnSurfaceVariant" />
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingBottom="24dp">
 
         <!--
             La frase del permiso, a la vista desde el arranque: se explica para que se usa la
@@ -250,4 +316,6 @@
 
     </LinearLayout>
 
-</ScrollView>
+    </ScrollView>
+
+</LinearLayout>

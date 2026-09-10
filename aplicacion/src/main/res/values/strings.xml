@@ -25,6 +25,13 @@
     <string name="ubicacion_saludo">Sesión abierta como %1$s</string>
 
     <!--
+        El control de salida. El rótulo va corto porque comparte renglón con el título, y la
+        descripción de contenido dice lo que el rótulo no cabe: «Salir» a secas no aclara a dónde.
+    -->
+    <string name="ubicacion_salir">Salir</string>
+    <string name="ubicacion_salir_descripcion">Cerrar la sesión y volver al ingreso</string>
+
+    <!--
         La frase del permiso. Está a la vista desde que abre la pantalla, antes de que se pida
         nada, y es la misma que se vuelve a mostrar cuando el sistema pide justificar la petición.
     -->
@@ -40,6 +47,13 @@
     <string name="ubicacion_etiqueta_latitud">Latitud</string>
     <string name="ubicacion_etiqueta_longitud">Longitud</string>
     <string name="ubicacion_horario">%1$s a %2$s</string>
+
+    <!--
+        La misma frase que la web pone en la parada vigente cuando la franja termina al día
+        siguiente. Es el caso del truck nocturno, y también el de la parada que asienta el propio
+        reporte del GPS, que se escribe con las dos horas iguales para quedar vigente 24 horas.
+    -->
+    <string name="ubicacion_horario_nocturno">%1$s a %2$s (cierra al día siguiente)</string>
 
     <!--
         Las tres columnas que admiten nulo en la tabla `ubicaciones`. Un nulo se lee con estas
