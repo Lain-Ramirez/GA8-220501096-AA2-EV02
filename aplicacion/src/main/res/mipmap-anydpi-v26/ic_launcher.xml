@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Icono adaptativo del APK (API 26 en adelante).
+
+    El fondo es un color liso y no un vector: el dorado de --secondary-container, que es el mismo
+    que llevan cocido los bitmaps de respaldo de mipmap-*dpi. Va en values/colors.xml y NO en values-night: el icono del
+    lanzador no cambia con el modo oscuro del telefono, y el lanzador ademas lo cachea.
+
+    La capa de delante es el camion ya metido en la zona segura por el generador: la mascara del
+    lanzador —circulo, cuadrado redondeado, gota, segun el fabricante— solo respeta los 66 dp
+    centrales de los 108, asi que un dibujo a sangre saldria mordido por los bordes.
+
+    monochrome apunta a la misma capa. Para el icono tematico de Android 13 el sistema se queda
+    solo con el canal alfa y lo tiñe, y la silueta del camion se reconoce igual de bien.
+-->
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-    <background android:drawable="@drawable/ic_launcher_background" />
-    <foreground android:drawable="@drawable/ic_launcher_foreground" />
-    <monochrome android:drawable="@drawable/ic_launcher_foreground" />
+    <background android:drawable="@color/icono_fondo" />
+    <foreground android:drawable="@mipmap/ic_launcher_foreground" />
+    <monochrome android:drawable="@mipmap/ic_launcher_foreground" />
 </adaptive-icon>
