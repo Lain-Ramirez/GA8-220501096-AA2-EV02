@@ -8,6 +8,18 @@ import java.net.URLEncoder
 import javax.net.ssl.HttpsURLConnection
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.json.JSONException
+import org.json.JSONObject
+
+/**
+ * Lo que devuelven las llamadas de este cliente: el cuerpo de un exito es un objeto JSON.
+ *
+ * El alias vive aqui y no en Resultado.kt a proposito. Resultado quedo generico para no
+ * arrastrar org.json —sin eso sus dos funciones puras no se podrian probar en la JVM—, y este
+ * archivo es el unico que de verdad lee el cuerpo, asi que es el que puede fijar el tipo. Las
+ * pantallas escriben RespuestaMenu08 y no Resultado<JSONObject>: dice lo mismo y se lee mejor.
+ */
+typealias RespuestaMenu08 = Resultado<JSONObject>
 
 private const val CODIFICACION = "UTF-8"
 
@@ -54,7 +66,7 @@ object ClienteMenu08 {
      * el servicio, y el correo con el que se entro. La contrasena no se guarda: viaja en este
      * cuerpo y no se vuelve a usar, asi que un reintento exige teclearla otra vez.
      */
-    suspend fun ingresar(correo: String, contrasena: String): Resultado {
+    suspend fun ingresar(correo: String, contrasena: String): RespuestaMenu08 {
         val resultado = peticionPost(
             RUTA_INGRESO,
             listOf("correo" to correo, "contrasena" to contrasena),
@@ -77,7 +89,7 @@ object ClienteMenu08 {
      * Reporta el punto del truck. La latitud y la longitud llegan ya formateadas: aqui solo se
      * codifican. El _token sale de la sesion, nunca de quien llama.
      */
-    suspend fun enviarUbicacion(latitud: String, longitud: String): Resultado =
+    suspend fun enviarUbicacion(latitud: String, longitud: String): RespuestaMenu08 =
         peticionPost(
             RUTA_UBICACION,
             listOf(
@@ -91,7 +103,7 @@ object ClienteMenu08 {
      * Un POST de formulario contra la ruta indicada. Las cookies las pone y las lee el
      * CookieHandler que instala Aplicacion.onCreate(), asi que aqui no se manipula ninguna.
      */
-    suspend fun peticionPost(ruta: String, campos: List<Pair<String, String>>): Resultado =
+    suspend fun peticionPost(ruta: String, campos: List<Pair<String, String>>): RespuestaMenu08 =
         withContext(Dispatchers.IO) {
             val cuerpo = cuerpoCodificado(campos).toByteArray(Charsets.UTF_8)
             var conexion: HttpsURLConnection? = null
@@ -162,14 +174,44 @@ object ClienteMenu08 {
      * ingreso fallido, que no tiene ninguna sesion que cerrar, y un 403 rol_no_autorizado es una
      * cuenta que entro bien pero no administra la agenda.
      */
-    private fun cerrarSesionSiElServidorLaRechaza(resultado: Resultado) {
-        if (resultado !is Resultado.ErrorHttp) return
-
-        val sesionRechazada = (resultado.codigo == 401 && resultado.error == "no_autenticado") ||
-            (resultado.codigo == 403 && resultado.error == "token_invalido")
-
-        if (sesionRechazada) {
+    private fun cerrarSesionSiElServidorLaRechaza(resultado: RespuestaMenu08) {
+        if (resultado is Resultado.ErrorHttp && resultado.exigeReingreso) {
             SesionMovil.cerrar()
         }
+    }
+
+    /**
+     * El par (codigo, cuerpo) convertido en uno de los tres casos.
+     *
+     * Vive aqui, y no en Resultado.kt de donde vino, porque es el unico paso que necesita leer
+     * JSON: en cuanto una funcion toca JSONObject deja de poder comprobarse en una prueba local,
+     * y Resultado tiene que poder. Lo que se quedo alli son las dos reglas puras —esExito() y
+     * clasificarError()— que esta funcion usa.
+     *
+     * El analisis del cuerpo no tiene prueba de JVM por esa misma razon; se comprueba contra el
+     * servidor vivo en las pruebas de dispositivo de #12.
+     */
+    private fun traducirRespuesta(codigo: Int, cuerpo: String): RespuestaMenu08 {
+        val objeto = try {
+            JSONObject(cuerpo)
+        } catch (e: JSONException) {
+            null
+        }
+
+        if (esExito(codigo)) {
+            // Un exito sin cuerpo JSON no es utilizable: quien llama espera leer campos de el.
+            return objeto?.let { Resultado.Exito(it) }
+                ?: clasificarError(
+                    codigo,
+                    "respuesta_ilegible",
+                    "El servidor respondio $codigo con un cuerpo que no es JSON.",
+                )
+        }
+
+        return clasificarError(
+            codigo,
+            objeto?.optString("error").orEmpty(),
+            objeto?.optString("mensaje").orEmpty(),
+        )
     }
 }

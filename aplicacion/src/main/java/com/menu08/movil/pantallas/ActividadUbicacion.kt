@@ -19,11 +19,13 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.menu08.movil.R
+import com.menu08.movil.red.RespuestaMenu08
 import com.menu08.movil.red.Resultado
 import com.menu08.movil.red.SesionMovil
 import com.menu08.movil.ubicacion.GestorUbicacion
 import com.menu08.movil.ubicacion.PuntoCapturado
 import java.util.Date
+import org.json.JSONObject
 
 /**
  * Pantalla de ubicacion: que parada tiene el sistema y el boton que reporta el punto.
@@ -373,15 +375,19 @@ class ActividadUbicacion : AppCompatActivity() {
     }
 
     /**
-     * El dia en letra, leido del array de siete por el indice `dia_semana - 1`.
+     * El dia en letra, leido del array de siete por el indice que resuelve DiaSemana.
      *
      * La numeracion es la de Ubicacion::DIAS en el servidor —1 lunes … 7 domingo—, de modo que el
-     * 7 cae en «Domingo». La tabla tiene un CHECK que impide guardar un valor fuera de 1 a 7, pero
-     * un JSON sin la clave llega aqui como 0: en ese caso el campo dice que el dia no esta
-     * definido en vez de quedarse en blanco.
+     * 7 cae en «Domingo». Aqui solo queda la lectura del recurso: la correspondencia entre el
+     * numero y el indice vive en DiaSemana.indiceDia(), que al no necesitar un Context se puede
+     * comprobar en una prueba de JVM.
+     *
+     * Un dia fuera de 1 a 7 devuelve indice -1, getOrNull(-1) devuelve nulo y el campo dice que
+     * el dia no esta definido en vez de quedarse en blanco. La tabla tiene un CHECK que lo impide,
+     * pero un JSON sin la clave llega aqui como 0.
      */
     private fun nombreDelDia(dia: Int): String =
-        resources.getStringArray(R.array.dias_semana).getOrNull(dia - 1)
+        resources.getStringArray(R.array.dias_semana).getOrNull(DiaSemana.indiceDia(dia))
             ?: getString(R.string.ubicacion_dia_desconocido)
 
     private fun restaurarAvisos(guardados: Array<String>?) {
@@ -546,7 +552,7 @@ class ActividadUbicacion : AppCompatActivity() {
      * lo mismo otra vez: si el servidor contesto, ya vio el punto, y repetirlo no cambiaria su
      * respuesta.
      */
-    private fun alResponderElServidor(resultado: Resultado) {
+    private fun alResponderElServidor(resultado: RespuestaMenu08) {
         when (resultado) {
             is Resultado.Exito -> {
                 puntoPendiente = null
@@ -567,7 +573,7 @@ class ActividadUbicacion : AppCompatActivity() {
      * desenlaces fue: false llega con el 200 de la parada vigente corregida, true con el 201 de
      * la parada nueva que se registro porque no habia ninguna vigente.
      */
-    private fun pintarLaParadaAsentada(resultado: Resultado.Exito) {
+    private fun pintarLaParadaAsentada(resultado: Resultado.Exito<JSONObject>) {
         val parada = resultado.datos.optJSONObject("parada")
 
         if (parada == null) {
@@ -586,11 +592,10 @@ class ActividadUbicacion : AppCompatActivity() {
      * arregla con eso y donde echar al usuario al formulario seria mentirle.
      */
     private fun pintarElErrorDelServidor(error: Resultado.ErrorHttp) {
-        val sesionPerdida = (error.codigo == 401 && error.error == "no_autenticado") ||
-            (error.codigo == 403 && error.error == "token_invalido")
-
         when {
-            sesionPerdida -> volverAIngreso(getString(R.string.ubicacion_sesion_caducada))
+            // La regla vive en ErrorHttp.exigeReingreso: antes estaba escrita aqui y otra vez en
+            // ClienteMenu08, con el riesgo de que una de las dos copias cambiara sin la otra.
+            error.exigeReingreso -> volverAIngreso(getString(R.string.ubicacion_sesion_caducada))
 
             error.codigo == 403 && error.error == "rol_no_autorizado" ->
                 pintarError(getString(R.string.ubicacion_rol_no_autorizado))

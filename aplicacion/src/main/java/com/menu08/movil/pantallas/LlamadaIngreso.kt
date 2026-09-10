@@ -2,7 +2,7 @@ package com.menu08.movil.pantallas
 
 import com.menu08.movil.red.ClienteMenu08
 import com.menu08.movil.red.LlamadaEnVuelo
-import com.menu08.movil.red.Resultado
+import com.menu08.movil.red.RespuestaMenu08
 
 /**
  * El ingreso en curso, sobreviviendo al giro del dispositivo.
@@ -21,7 +21,7 @@ object LlamadaIngreso {
     fun ingresar(correo: String, contrasena: String) =
         llamada.lanzar { ClienteMenu08.ingresar(correo, contrasena) }
 
-    fun escuchar(nuevo: ((Resultado) -> Unit)?) = llamada.escuchar(nuevo)
+    fun escuchar(nuevo: ((RespuestaMenu08) -> Unit)?) = llamada.escuchar(nuevo)
 
     fun olvidar() = llamada.olvidar()
 }

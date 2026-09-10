@@ -15,6 +15,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.textfield.TextInputLayout
 import com.menu08.movil.R
+import com.menu08.movil.red.RespuestaMenu08
 import com.menu08.movil.red.Resultado
 import com.menu08.movil.red.SesionMovil
 
@@ -200,7 +201,7 @@ class ActividadIngreso : AppCompatActivity() {
      * El when es exhaustivo sobre una clase sellada: si algun dia aparece un cuarto caso, esto
      * deja de compilar en vez de dejar al usuario mirando un boton que no responde.
      */
-    private fun pintarResultado(resultado: Resultado) {
+    private fun pintarResultado(resultado: RespuestaMenu08) {
         pintarCargando(false)
 
         when (resultado) {

@@ -2,7 +2,7 @@ package com.menu08.movil.pantallas
 
 import com.menu08.movil.red.ClienteMenu08
 import com.menu08.movil.red.LlamadaEnVuelo
-import com.menu08.movil.red.Resultado
+import com.menu08.movil.red.RespuestaMenu08
 
 /**
  * El reporte del punto en curso, sobreviviendo al giro del dispositivo.
@@ -23,7 +23,7 @@ object LlamadaUbicacion {
     fun enviar(latitud: String, longitud: String) =
         llamada.lanzar { ClienteMenu08.enviarUbicacion(latitud, longitud) }
 
-    fun escuchar(nuevo: ((Resultado) -> Unit)?) = llamada.escuchar(nuevo)
+    fun escuchar(nuevo: ((RespuestaMenu08) -> Unit)?) = llamada.escuchar(nuevo)
 
     fun olvidar() = llamada.olvidar()
 }

@@ -58,6 +58,21 @@ dependencies {
     // asi que el Material de Google de arriba tampoco se puede quitar: sin el no arranca.
     implementation(libs.kotlinx.coroutines.android)
 
+    // La bateria de pruebas de JVM del #14 no anade NI UNA linea aqui: corre entera sobre el
+    // JUnit 4 que ya traia la plantilla. Lo que la hace posible no es una biblioteca, es que las
+    // cuatro reglas que ejercita —rango y formato de la coordenada, traduccion del codigo de
+    // respuesta, antiguedad del punto y numeracion del dia— viven en funciones puras, sin un
+    // solo import de android.* ni de org.json.
+    //
+    // Y tampoco se declara:
+    //
+    //     testOptions { unitTests.isReturnDefaultValues = true }
+    //
+    // Esa es, en Kotlin DSL, la linea que cambiaria el `throw RuntimeException("Method ... not
+    // mocked.")` del jar de pruebas por un null o un 0. Parece la solucion y es peor que el
+    // problema: JSONObject seguiria sin analizar nada, solo que en vez de reventar devolveria
+    // vacio, y el aserto pasaria a comprobar una respuesta inventada. Un fallo ruidoso se
+    // convertiria en una prueba verde que no prueba nada.
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
