@@ -34,3 +34,9 @@ local.properties
 *.jks
 *.keystore
 clave_firma.properties
+
+# APK compilados sueltos en la raiz. La entrega NO se versiona: se publica como asset de una
+# release (v1.0 en adelante), que acepta cualquier tipo de archivo y da un enlace estable. Un APK
+# en el repositorio se queda viejo en cuanto cambia el codigo —paso con el de 2cebe5c, anterior al
+# #21— y cada version nueva engordaria el historial con cinco megas que no se pueden borrar.
+/*.apk
