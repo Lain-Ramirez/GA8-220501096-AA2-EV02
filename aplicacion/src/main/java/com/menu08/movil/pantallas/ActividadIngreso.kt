@@ -260,7 +260,9 @@ class ActividadIngreso : AppCompatActivity() {
     private fun irAUbicacion() {
         SesionMovil.correo?.let { recordarCorreo(it) }
 
-        startActivity(ActividadUbicacion.intencion(this, SesionMovil.nombre, SesionMovil.rol))
+        startActivity(
+            ActividadUbicacion.intencion(this, SesionMovil.nombre, SesionMovil.rol, SesionMovil.foodTruck)
+        )
 
         // Con finish() el boton atras ya no devuelve al formulario de una sesion abierta.
         finish()

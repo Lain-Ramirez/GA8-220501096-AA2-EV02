@@ -27,6 +27,7 @@
         relleno de las barras del sistema; el desplazamiento tiene ahora su propio id.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/pantalla_ubicacion"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -51,6 +52,28 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical">
+
+            <!--
+                El nombre del food truck, ENCIMA del titulo y de la cuenta.
+
+                Va primero porque es el dato que evita el error caro: reportar el punto sobre el
+                negocio equivocado. Antes la cabecera solo decia quien habia entrado, y las cuentas
+                de demostracion y de pruebas se llaman casi igual —«Administrador del food truck» y
+                «Administrador de pruebas»—, asi que dos sesiones de prueba acabaron escribiendo en
+                la agenda real de Festin Rodante sin que nada en pantalla lo delatara.
+
+                En colorSecondary, que es el dorado de la marca: se lee de un vistazo sin competir
+                con el rojo del titulo. Se oculta si la sesion no trajo truck (rol plataforma).
+            -->
+            <TextView
+                android:id="@+id/texto_food_truck"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textColor="?attr/colorSecondary"
+                android:textStyle="bold"
+                tools:text="Truck de Pruebas"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/texto_titulo"

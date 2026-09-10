@@ -54,7 +54,10 @@ class PruebaClienteEnServidor {
      * espera: se ha visto a esta clase tardar 998 segundos en rendirse y dar despues un rojo que
      * no significaba nada. Un rojo asi cuesta una tarde y hace desconfiar de una bateria sana.
      */
-    private fun exigirRespuesta(resultado: Resultado): Resultado {
+    // El tipo es RespuestaMenu08 —el alias de Resultado<JSONObject> que fija ClienteMenu08— y no
+    // Resultado a secas: desde el #14 el tipo sellado es generico, y sin el argumento de tipo las
+    // llamadas de abajo pierden la inferencia y `as Resultado.Exito` deja de resolver `.datos`.
+    private fun exigirRespuesta(resultado: RespuestaMenu08): RespuestaMenu08 {
         assumeTrue(
             "Se salta: la llamada no llego al servidor y volvio como $resultado.",
             resultado !is Resultado.ErrorRed,

@@ -79,6 +79,11 @@ object ClienteMenu08 {
                 rol = usuario?.optString("rol").orEmpty(),
                 nombre = usuario?.optString("nombre").orEmpty(),
                 correo = correo,
+                // Null de verdad y no cadena vacia: optString devuelve "" tanto si la clave viene
+                // nula —el rol plataforma— como si un servidor viejo no la manda, y la cabecera
+                // tiene que poder distinguir «sin truck» de «no lo se» para no enseñar un hueco.
+                foodTruck = usuario?.takeIf { !it.isNull("food_truck") }
+                    ?.optString("food_truck")?.ifEmpty { null },
             )
         }
 
