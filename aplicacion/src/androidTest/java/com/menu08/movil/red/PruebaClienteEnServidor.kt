@@ -33,14 +33,35 @@ private const val CONTRASENA = "Menu08*Demo2026"
  * Ninguna de las cuatro pruebas escribe nada en el servidor: el reporte solo se ejercita en los
  * casos en que el servidor lo rechaza.
  *
- * Necesitan red, y por eso las dos que hacen varios viajes se SALTAN —no fallan— cuando una
- * llamada no llega: un fallo por cobertura no dice nada del cliente y hace desconfiar de una
- * bateria sana.
+ * Necesitan red, y por eso TODAS se SALTAN —no fallan— cuando una llamada no llega al servidor:
+ * un fallo por cobertura no dice nada del cliente y hace desconfiar de una bateria sana. La
+ * guarda esta en exigirRespuesta(), por la que pasa cada llamada.
  */
 @RunWith(AndroidJUnit4::class)
 class PruebaClienteEnServidor {
 
     private fun almacen() = (CookieHandler.getDefault() as CookieManager).cookieStore
+
+    /**
+     * Deja pasar el resultado, o SALTA la prueba si la llamada no llego al servidor.
+     *
+     * Toda llamada de esta clase pasa por aqui. Un ErrorRed significa que no hubo respuesta —sin
+     * cobertura, o con el socket colgado— y eso no dice nada del cliente: la prueba se salta en
+     * vez de fallar, que es el mismo criterio de PruebaClienteSinRed, al reves.
+     *
+     * No es precaucion teorica. Con WiFi y datos moviles conectados a la vez, un cambio de red a
+     * mitad de peticion deja el socket estancado muy por encima de sus propios tiempos de
+     * espera: se ha visto a esta clase tardar 998 segundos en rendirse y dar despues un rojo que
+     * no significaba nada. Un rojo asi cuesta una tarde y hace desconfiar de una bateria sana.
+     */
+    private fun exigirRespuesta(resultado: Resultado): Resultado {
+        assumeTrue(
+            "Se salta: la llamada no llego al servidor y volvio como $resultado.",
+            resultado !is Resultado.ErrorRed,
+        )
+
+        return resultado
+    }
 
     @Before
     fun partirSinSesion() {
@@ -50,7 +71,7 @@ class PruebaClienteEnServidor {
 
     @Test
     fun elIngresoCorrectoAbreSesionYDejaLaCookie() = runBlocking {
-        val resultado = ClienteMenu08.ingresar(CORREO, CONTRASENA)
+        val resultado = exigirRespuesta(ClienteMenu08.ingresar(CORREO, CONTRASENA))
 
         assertTrue("Se esperaba Exito y llego $resultado", resultado is Resultado.Exito)
         val datos = (resultado as Resultado.Exito).datos
@@ -74,7 +95,7 @@ class PruebaClienteEnServidor {
 
     @Test
     fun unCorreoInexistenteDevuelve401YNoAbreSesion() = runBlocking {
-        val resultado = ClienteMenu08.ingresar("nadie@menu08.local", CONTRASENA)
+        val resultado = exigirRespuesta(ClienteMenu08.ingresar("nadie@menu08.local", CONTRASENA))
 
         assertTrue("Se esperaba ErrorHttp y llego $resultado", resultado is Resultado.ErrorHttp)
         val error = resultado as Resultado.ErrorHttp
@@ -88,14 +109,14 @@ class PruebaClienteEnServidor {
 
     @Test
     fun laSesionRechazadaPorElServidorVaciaSesionMovil() = runBlocking {
-        assertTrue(ClienteMenu08.ingresar(CORREO, CONTRASENA) is Resultado.Exito)
+        assertTrue(exigirRespuesta(ClienteMenu08.ingresar(CORREO, CONTRASENA)) is Resultado.Exito)
         assertTrue(SesionMovil.abierta)
 
         // Se tira la cookie sin tocar la sesion local: es lo que le pasa al token cuando vence a
         // los 120 minutos, visto desde el cliente.
         almacen().removeAll()
 
-        val resultado = ClienteMenu08.enviarUbicacion("4.6767000", "-74.0483000")
+        val resultado = exigirRespuesta(ClienteMenu08.enviarUbicacion("4.6767000", "-74.0483000"))
 
         assertTrue("Se esperaba ErrorHttp y llego $resultado", resultado is Resultado.ErrorHttp)
         val error = resultado as Resultado.ErrorHttp
@@ -121,20 +142,7 @@ class PruebaClienteEnServidor {
      */
     @Test
     fun cerrarVaciaElAlmacenDeCookies() = runBlocking {
-        val ingreso = ClienteMenu08.ingresar(CORREO, CONTRASENA)
-
-        // Si la red del dispositivo se estanca, esta prueba se salta en vez de fallar: lo que
-        // viene a comprobar es que cerrar() vacia el almacen, no que el telefono tenga
-        // cobertura. Es el mismo criterio de PruebaClienteSinRed, al reves.
-        //
-        // No es hipotetico: es la prueba de esta clase que mas viajes hace —ingreso, /salir y
-        // reporte—, y con WiFi y datos moviles conectados a la vez, un cambio de red a mitad de
-        // peticion deja el socket colgado muy por encima de sus propios tiempos de espera. Un
-        // fallo asi no dice nada del codigo y hace desconfiar de una bateria que esta sana.
-        assumeTrue(
-            "Se salta: el ingreso no llego al servidor y volvio como $ingreso.",
-            ingreso !is Resultado.ErrorRed,
-        )
+        val ingreso = exigirRespuesta(ClienteMenu08.ingresar(CORREO, CONTRASENA))
 
         assertTrue("Se esperaba Exito y llego $ingreso", ingreso is Resultado.Exito)
         assertTrue(
@@ -175,7 +183,7 @@ class PruebaClienteEnServidor {
         // que sigue no probaria lo que dice probar, asi que se corta aqui con el motivo a la vista.
         assertEquals("GET /salir no cerro la sesion en el servidor", 302, codigoSalir)
 
-        val resultado = ClienteMenu08.enviarUbicacion("4.6767000", "-74.0483000")
+        val resultado = exigirRespuesta(ClienteMenu08.enviarUbicacion("4.6767000", "-74.0483000"))
 
         assertTrue("Se esperaba ErrorHttp y llego $resultado", resultado is Resultado.ErrorHttp)
         assertEquals(401, (resultado as Resultado.ErrorHttp).codigo)
