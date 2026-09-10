@@ -25,6 +25,13 @@
     <string name="ubicacion_saludo">Sesión abierta como %1$s</string>
 
     <!--
+        El control de salida. El rótulo va corto porque comparte renglón con el título, y la
+        descripción de contenido dice lo que el rótulo no cabe: «Salir» a secas no aclara a dónde.
+    -->
+    <string name="ubicacion_salir">Salir</string>
+    <string name="ubicacion_salir_descripcion">Cerrar la sesión y volver al ingreso</string>
+
+    <!--
         La frase del permiso. Está a la vista desde que abre la pantalla, antes de que se pida
         nada, y es la misma que se vuelve a mostrar cuando el sistema pide justificar la petición.
     -->
