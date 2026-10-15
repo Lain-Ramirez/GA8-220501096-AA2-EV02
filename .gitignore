@@ -34,3 +34,9 @@ local.properties
 *.jks
 *.keystore
 clave_firma.properties
+
+# APK sueltos en la raiz: ignorados, para que ninguna compilacion se cuele por descuido.
+# La excepcion es la entrega, Menu08Movil-1.0.apk, versionada a proposito con `git add -f`: a un
+# archivo ya versionado esta regla no le afecta. Al publicar una version nueva se sustituye ese
+# archivo y el asset de la release en el mismo cambio, para que los dos digan lo mismo.
+/*.apk
