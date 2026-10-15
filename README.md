@@ -1,3 +1,7 @@
+<!-- Menu08.com:header -->
+[![Menu08.com móvil: ingresa y reporta por GPS la parada del food truck desde Android](assets/brand/modulo-movil-menu08-com-header.png)](docs/manual-movil.md)
+<!-- /Menu08.com:header -->
+
 # Menu08 · módulo móvil
 
 Aplicación Android con la que quien atiende un **food truck** reporta desde el teléfono el punto
@@ -185,3 +189,7 @@ durante un turno.
 ---
 
 Proyecto formativo · Tecnólogo en Análisis y Desarrollo de Software (ADSO), SENA · Ficha 3235887
+
+<!-- Menu08.com:footer -->
+[![Cierre del módulo móvil de Menu08.com: sesión en memoria y reportes de ubicación por HTTPS; compila la aplicación Android](assets/brand/modulo-movil-menu08-com-footer.png)](#cómo-compilar)
+<!-- /Menu08.com:footer -->

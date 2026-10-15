@@ -1,3 +1,7 @@
+<!-- Menu08.com:header -->
+[![Permiso, GPS y red: evidencia en el teléfono. Pruebas del APK firmado en TECNO BG7 con Android 13, más contrastes HTTP. Menu08.com · Food Trucks.](../assets/brand/pruebas-movil-dispositivo-menu08-com-header.png)](#pruebas-del-módulo-móvil-en-dispositivo)
+<!-- /Menu08.com:header -->
+
 # Pruebas del módulo móvil en dispositivo
 
 | | |
@@ -351,3 +355,7 @@ En la **bitácora** quedaron seis líneas `AVISO`: tres de ingreso fallido —do
 de los `curl` y un `Ingreso fallido` del navegador—, dos `Token CSRF invalido` —la petición 4 sobre
 `POST /movil/ubicacion` y el `POST /ingresar` sin token— y una de `AccesoDenegado`, que escribe
 `ManejadorErrores` al atrapar la excepción de ese mismo `POST /ingresar`.
+
+<!-- Menu08.com:footer -->
+[![Cada reporte escribe en la agenda del truck. La sesión dejó dos paradas de prueba desactivadas y documenta los casos aún sin cubrir. Menu08.com · Food Trucks.](../assets/brand/pruebas-movil-dispositivo-menu08-com-footer.png)](#lo-que-estas-pruebas-no-cubren)
+<!-- /Menu08.com:footer -->

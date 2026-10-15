@@ -1,3 +1,7 @@
+<!-- Menu08.com:header -->
+[![Reporta el punto del truck desde el teléfono. Dos pantallas: ingreso, ubicación y qué hacer ante cada mensaje. Menu08.com · Food Trucks.](../assets/brand/manual-movil-menu08-com-header.png)](#para-quién)
+<!-- /Menu08.com:header -->
+
 # Manual de uso de la aplicación móvil
 
 Cómo se usa la aplicación del módulo móvil de Menu08 desde el teléfono. Son dos pantallas y un
@@ -192,3 +196,7 @@ borra además el correo recordado.
 > de verdad: si cae dentro de la franja de una parada real, le cambia las coordenadas sin dejar
 > rastro. Y las capturas enseñan el nombre del truck, la cuenta y la posición real del teléfono, así
 > que conviene mirarlas antes de subirlas.
+
+<!-- Menu08.com:footer -->
+[![Mira el nombre del truck antes de reportar. El punto modifica la agenda real; al terminar, pulsa Salir antes de prestar el teléfono. Menu08.com · Food Trucks.](../assets/brand/manual-movil-menu08-com-footer.png)](#al-reportar-el-punto)
+<!-- /Menu08.com:footer -->

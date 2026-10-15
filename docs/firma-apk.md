@@ -1,3 +1,7 @@
+<!-- Menu08.com:header -->
+[![Entrega el APK con su firma propia. Almacén, Gradle e instalación de Menu08Movil-1.0.apk en variante release. Menu08.com · Food Trucks.](../assets/brand/firma-apk-menu08-com-header.png)](#dónde-está-cada-cosa)
+<!-- /Menu08.com:header -->
+
 # Firma del APK de entrega
 
 El archivo que se entrega es **`Menu08Movil-1.0.apk`**, compilado en la variante `release` y firmado
@@ -160,3 +164,7 @@ cp aplicacion/build/outputs/apk/release/aplicacion-release.apk \
 ```
 
 Si cambia el `versionName`, cambia también el nombre del archivo que se entrega.
+
+<!-- Menu08.com:footer -->
+[![La misma clave permite actualizar el APK. La entrega usa firma v2 propia; conserva el almacén fuera del repositorio. Menu08.com · Food Trucks.](../assets/brand/firma-apk-menu08-com-footer.png)](#rehacer-la-entrega)
+<!-- /Menu08.com:footer -->

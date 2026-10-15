@@ -1,0 +1,36 @@
+{
+  "brand": "Menu08.com",
+  "method": "imagegen (generación integrada); acabado técnico con ImageMagick",
+  "canvas": [
+    1942,
+    809
+  ],
+  "prompts": [
+    {
+      "id": "movil-header",
+      "document": "README.md",
+      "kind": "header",
+      "slug": "modulo-movil-menu08-com",
+      "title": "Reporta la parada\ndesde el teléfono",
+      "subtitle": "Ingreso y GPS para actualizar la ubicación del food truck.",
+      "cta": "Conoce cómo usar el móvil →",
+      "target": "docs/manual-movil.md",
+      "alt": "Menu08.com móvil: ingresa y reporta por GPS la parada del food truck desde Android",
+      "prompt": "Use case: ads-marketing. Create a complete premium Menu08.com editorial Markdown banner, canvas 1942x809, panoramic 2.4:1. Reference image is only a STYLE reference for dark warm Material Design 3, tactile Food Truck 3D and typography. Background #18120F/#241B16, ivory #F4E5DE, three restrained flowing accents peach #FFB599, sage #A4D3AB, amber #F0C15B. Inter/Roboto-style left-aligned Spanish text in x112..1030, headline max two lines, CTA as accent TEXT without button or capsule. Polished illustration right x1200..1800, all key content inside safe 40px margins. Top-right x1814..1942,y0..128 must be quiet empty background reserved for a real 64px PNG added later. Absolutely NO generated emoji, cutlery, fork-and-knife mark, empty boxes or blank screens. Include signature verbatim 'Menu08.com · Food Trucks'. HEADER for the mobile module README: a Kotlin Android application with two screens, sign in and report current food-truck position using native GPS over HTTPS. Exact headline in two lines 'Reporta la parada' / 'desde el teléfono'; exact support 'Ingreso y GPS para actualizar la ubicación del food truck.'; exact CTA 'Conoce cómo usar el móvil →'. Right-side scene: finished cream-and-sage food truck at the curb, a prominent tactile peach Android smartphone with a populated simple location-report screen and a single report action, plus one small amber physical location pin beside the truck. The screen may use only small text 'Parada vigente', 'GPS' and 'Reportar ubicación'; no map interface or extra app features. Warm soft studio lighting and useful coherent objects. Entire banner includes exact final typography.",
+      "image": "assets/brand/modulo-movil-menu08-com-header.png"
+    },
+    {
+      "id": "movil-footer",
+      "document": "README.md",
+      "kind": "footer",
+      "slug": "modulo-movil-menu08-com",
+      "title": "El punto cambia.\nLa parada se actualiza.",
+      "subtitle": "Sesión en memoria y reportes por HTTPS desde Android.",
+      "cta": "Compila el módulo móvil →",
+      "target": "#cómo-compilar",
+      "alt": "Cierre del módulo móvil de Menu08.com: sesión en memoria y reportes de ubicación por HTTPS; compila la aplicación Android",
+      "prompt": "Use case: ads-marketing. Create a complete premium Menu08.com editorial Markdown banner, canvas 1942x809, panoramic 2.4:1. Reference image is only a STYLE reference for dark warm Material Design 3, tactile Food Truck 3D and typography. Background #18120F/#241B16, ivory #F4E5DE, three restrained flowing accents peach #FFB599, sage #A4D3AB, amber #F0C15B. Inter/Roboto-style left-aligned Spanish text in x112..1030, headline max two lines, CTA as accent TEXT without button or capsule. Polished illustration right x1200..1800, all key content inside safe 40px margins. Top-right x1814..1942,y0..128 must be quiet empty background reserved for a real 64px PNG added later. Absolutely NO generated emoji, cutlery, fork-and-knife mark, empty boxes or blank screens. Include signature verbatim 'Menu08.com · Food Trucks'. FOOTER paired with the mobile README header: a useful conclusion about the Android module that signs in and reports current food-truck position. Exact headline in two lines 'El punto cambia.' / 'La parada se actualiza.'; exact support 'Sesión en memoria y reportes por HTTPS desde Android.'; exact CTA 'Compila el módulo móvil →'. Right scene: matching cream-and-sage food truck at its next curbside stop, a populated peach Android smartphone showing a simple location-report screen, and one amber location pin linked subtly to the truck; a warm closing composition. Screen text may only be 'Parada vigente', 'GPS' and 'Reportar ubicación'; no maps, extra modules, success checkmarks, claims about new tests or security guarantees. All typography already rendered in the image.",
+      "image": "assets/brand/modulo-movil-menu08-com-footer.png"
+    }
+  ]
+}
